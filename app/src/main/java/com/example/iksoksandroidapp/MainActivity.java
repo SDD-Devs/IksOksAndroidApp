@@ -2,11 +2,9 @@ package com.example.iksoksandroidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.ImageButton;
-import android.widget.TextView;
-import android.content.Intent;
 
 public class MainActivity extends AppCompatActivity {
     @Override
@@ -22,7 +20,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void onButtonClassicClick (View view) {
-
+        Intent enterClassic = new Intent(this, ClassicGameActivity.class);
+        startActivity(enterClassic);
     }
 
     public void onButtonCustomClick (View view) {
