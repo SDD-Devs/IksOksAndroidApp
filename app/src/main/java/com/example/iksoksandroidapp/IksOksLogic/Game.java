@@ -18,47 +18,12 @@ public class Game {
         this.currentTurn = PlayerType.IKS;
     }
 
-    public void printGame() {
-
-        StringBuilder stringBuilder = new StringBuilder();
-
-        stringBuilder.append(getStringFromTileState(board.getTileByID(0).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(1).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(2).getState()));
-
-        stringBuilder.append("\n-----\n");
-
-        stringBuilder.append(getStringFromTileState(board.getTileByID(3).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(4).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(5).getState()));
-
-        stringBuilder.append("\n-----\n");
-
-        stringBuilder.append(getStringFromTileState(board.getTileByID(6).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(7).getState()));
-        stringBuilder.append("|");
-        stringBuilder.append(getStringFromTileState(board.getTileByID(8).getState()));
-
-        System.out.println(stringBuilder);
-
-    }
-
-    private String getStringFromTileState(TileState tileState) {
-        if (tileState.equals(TileState.IKS)) return "X";
-        if (tileState.equals(TileState.OKS)) return "O";
-        return " ";
-    }
-
     public boolean playTile(int tileID) {
 
         Tile tile = board.getTileByID(tileID);
 
         if (!tile.getState().equals(TileState.EMPTY)) return false;
+        if (!gameState.equals(GameState.IN_PROGRESS)) return false;
 
         if (currentTurn.equals(PlayerType.IKS)) {
             tile.setState(TileState.IKS);
@@ -85,7 +50,7 @@ public class Game {
                 if (tile.getState().equals(TileState.EMPTY)) continue;
                 if (!Arrays.asList(0, 3, 6).contains(tile.getID())) continue;
 
-                for (int i = 1; i <= 2; i++) {
+                for (int i = 1; i <= 2; i += 1) {
                     Tile checkedTile = board.getTileByID(tile.getID() + i);
                     if (!checkedTile.getState().equals(tile.getState())) continue all_tiles;
                 }
@@ -104,7 +69,7 @@ public class Game {
                 if (tile.getState().equals(TileState.EMPTY)) continue;
                 if (!Arrays.asList(0, 1, 2).contains(tile.getID())) continue;
 
-                for (int i = 3; i <= 6; i++) {
+                for (int i = 3; i <= 6; i += 3) {
                     Tile checkedTile = board.getTileByID(tile.getID() + i);
                     if (!checkedTile.getState().equals(tile.getState())) continue all_tiles;
                 }
@@ -123,7 +88,7 @@ public class Game {
 
             if (tile.getState().equals(TileState.EMPTY)) break break_label;
 
-            for (int i = 4; i <= 8; i++) {
+            for (int i = 4; i <= 8; i += 4) {
                 Tile checkedTile = board.getTileByID(tile.getID() + i);
                 if (!checkedTile.getState().equals(tile.getState())) break break_label;
             }
@@ -136,11 +101,11 @@ public class Game {
         break_label:
         {   //Diagonal top right to bottom left
 
-            Tile tile = board.getTileByID(0);
+            Tile tile = board.getTileByID(2);
 
             if (tile.getState().equals(TileState.EMPTY)) break break_label;
 
-            for (int i = 2; i <= 4; i++) {
+            for (int i = 2; i <= 4; i += 2) {
                 Tile checkedTile = board.getTileByID(tile.getID() + i);
                 if (!checkedTile.getState().equals(tile.getState())) break break_label;
             }
@@ -162,7 +127,6 @@ public class Game {
 
             if (allFilled) {
                 gameState = GameState.TIE;
-                System.out.println(gameState);
                 return;
             }
 
