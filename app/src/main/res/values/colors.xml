@@ -7,4 +7,14 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <!--My colors-->
+    <color name="myBlue">#7986cb</color>
+    <color name="myBlueLight">#aab6fe</color>
+    <color name="myBlueDark">#49599a</color>
+
+    <color name="myPurple">#9575cd</color>>
+    <color name="myPurpleLight">#c7a4ff</color>
+    <color name="myPurpleDark">#65499c</color>
+
 </resources>

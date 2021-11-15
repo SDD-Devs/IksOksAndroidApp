@@ -28,4 +28,10 @@ public class GameManager {
         return null;
     }
 
+    public static String getStringFromTileState(TileState tileState) {
+        if (tileState.equals(TileState.IKS)) return "X";
+        if (tileState.equals(TileState.OKS)) return "O";
+        return " ";
+    }
+
 }

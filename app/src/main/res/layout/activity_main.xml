@@ -51,5 +51,4 @@
         app:srcCompat="@drawable/settingsicon" />
 
 
-
 </androidx.constraintlayout.widget.ConstraintLayout>
