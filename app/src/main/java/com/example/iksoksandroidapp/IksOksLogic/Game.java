@@ -13,6 +13,7 @@ public class Game {
     private Board board;
     private GameState gameState;
     private PlayerType currentTurn;
+    private long gameStartTime;
 
     private List<List<Integer>> winningPositions = new ArrayList<>();
 
@@ -20,6 +21,7 @@ public class Game {
         this.board = new Board();
         this.gameState = GameState.IN_PROGRESS;
         this.currentTurn = PlayerType.IKS;
+        this.gameStartTime = System.currentTimeMillis();
 
         //Caching all 8 possible winning positions
         winningPositions.add(Arrays.asList(0, 1, 2));
@@ -31,6 +33,14 @@ public class Game {
         winningPositions.add(Arrays.asList(0, 4, 8));
         winningPositions.add(Arrays.asList(2, 4, 6));
 
+    }
+
+    public long getPlayTimeMilliseconds() {
+        return System.currentTimeMillis() - gameStartTime;
+    }
+
+    public int getPlayTimeSeconds() {
+        return (int) ((System.currentTimeMillis() - gameStartTime) / 1000);
     }
 
     public boolean playTile(int tileID) {
