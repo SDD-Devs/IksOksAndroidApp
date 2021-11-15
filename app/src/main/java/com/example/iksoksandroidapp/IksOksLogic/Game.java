@@ -10,9 +10,6 @@ import java.util.List;
 
 public class Game {
 
-    //Commit testing comment
-    //Commit testing comment1
-
     private Board board;
     private GameState gameState;
     private PlayerType currentTurn;
@@ -35,12 +32,6 @@ public class Game {
         winningPositions.add(Arrays.asList(2, 4, 6));
 
     }
-
-    public int TestFunction()
-    {
-        return 1;
-    }
-
 
     public boolean playTile(int tileID) {
 
