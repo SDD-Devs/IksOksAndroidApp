@@ -35,6 +35,12 @@ public class Game {
 
     }
 
+    public int TestFunction()
+    {
+        return 1;
+    }
+
+
     public boolean playTile(int tileID) {
 
         Tile tile = board.getTileByID(tileID);
