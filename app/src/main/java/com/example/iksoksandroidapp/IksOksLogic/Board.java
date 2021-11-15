@@ -2,13 +2,15 @@ package com.example.iksoksandroidapp.IksOksLogic;
 
 import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
 
+import java.util.ArrayList;
+
 public class Board {
 
-    private Tile[] tiles = new Tile[9];
+    private ArrayList<Tile> tiles = new ArrayList<>();
 
     public Board() {
         for (int i = 0; i < 9; i++) {
-            tiles[i] = new Tile(i, TileState.EMPTY);
+            tiles.add(new Tile(i, TileState.EMPTY) );
         }
     }
 
@@ -21,12 +23,11 @@ public class Board {
         return null;
     }
 
-    public Tile[] getTiles() {
+    public ArrayList<Tile> getTiles() {
         return tiles;
     }
 
-    public void setTiles(Tile[] tiles) {
+    public void setTiles(ArrayList<Tile> tiles) {
         this.tiles = tiles;
     }
-
 }

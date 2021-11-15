@@ -3,53 +3,44 @@ package com.example.iksoksandroidapp;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.GridLayout;
 import android.widget.GridView;
-import android.widget.LinearLayout;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import com.example.iksoksandroidapp.IksOksLogic.Game;
+import com.example.iksoksandroidapp.IksOksLogic.BoardAdapter;
+import com.example.iksoksandroidapp.IksOksLogic.GameManager;
+import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
+import com.example.iksoksandroidapp.IksOksLogic.enums.PlayerType;
+import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
 
 public class ClassicGameActivity extends AppCompatActivity {
 
-    //Constants
-    public final int grid_dimension = 3;
 
-    //Variables
-    GridView gv_board;
-    Board gameBoard;
-    ArrayList<Square> boardSquares;
+    //Declaration
+    private static GameManager gameManager;
     BoardAdapter boardAdapter;
+    GridView gv_board;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_classic_game);
 
-
         //Initialization
+        gameManager = new GameManager();
         gv_board = (GridView) findViewById(R.id.gridView);
-        gameBoard = new Board();
-        boardSquares = new ArrayList<>();
 
-        //Initialization
-        for(int i=0; i<grid_dimension*grid_dimension; i++)
-        {
-            boardSquares.add(new Square(i, 'X'));
-        }
+        //Instantiate Game
+        gameManager.startNewGame();
 
-        boardSquares.set(3, new Square(3, 'O'));
+        boardAdapter = new BoardAdapter(this, gameManager.getGame());
 
 
-        boardAdapter = new BoardAdapter(this, boardSquares);
 
+        //Set the GridView adapter to the list of tiles.
         gv_board.setAdapter(boardAdapter);
 
-
     }
+
+
 }
