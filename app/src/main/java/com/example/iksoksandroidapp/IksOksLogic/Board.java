@@ -3,6 +3,7 @@ package com.example.iksoksandroidapp.IksOksLogic;
 import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class Board {
 
@@ -21,6 +22,16 @@ public class Board {
             }
         }
         return null;
+    }
+
+    public List<Integer> getTileIDSForTileState(TileState tileState) {
+        List<Integer> tileIDS = new ArrayList<>();
+        for (Tile tile : tiles) {
+            if (tile.getState().equals(tileState)) {
+                tileIDS.add(tile.getID());
+            }
+        }
+        return tileIDS;
     }
 
     public ArrayList<Tile> getTiles() {
