@@ -4,21 +4,51 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".SettingsActivity">
 
-
-    <TextView
-        android:id="@+id/test_options"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="You're in options"
+    <Switch
+        android:id="@+id/musicSwitch"
+        android:layout_width="224dp"
+        android:layout_height="69dp"
         android:fontFamily="@font/roboto_medium"
+        android:text="Music"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toTopOf="@+id/soundFXSwitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.613" />
+
+    <Switch
+        android:id="@+id/soundFXSwitch"
+        android:layout_width="224dp"
+        android:layout_height="69dp"
+        android:fontFamily="@font/roboto_medium"
+        android:text="Sound FX"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.146" />
+
+    <Button
+        android:id="@+id/themeChangeButton"
+        android:layout_width="224dp"
+        android:layout_height="69dp"
+        android:background="#584473"
+        android:fontFamily="@font/roboto_medium"
+        android:onClick="onButtonThemesClick"
+        android:text="THEMES"
         android:textSize="35sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
+        app:layout_constraintTop_toBottomOf="@+id/soundFXSwitch"
+        app:layout_constraintVertical_bias="0.062" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
