@@ -15,6 +15,12 @@ public class Board {
         }
     }
 
+    public void reset(){
+        for (Tile tile : tiles) {
+            tile.setState(TileState.EMPTY);
+        }
+    }
+
     public Tile getTileByID(int ID) {
         for (Tile tile : tiles) {
             if (tile.getID() == ID) {

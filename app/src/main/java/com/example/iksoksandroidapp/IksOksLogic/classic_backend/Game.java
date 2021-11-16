@@ -35,6 +35,12 @@ public class Game {
 
     }
 
+    public void reset() {
+        board.reset();
+        gameState = GameState.IN_PROGRESS;
+        gameStartTime = System.currentTimeMillis();
+    }
+
     public long getPlayTimeMilliseconds() {
         return System.currentTimeMillis() - gameStartTime;
     }
