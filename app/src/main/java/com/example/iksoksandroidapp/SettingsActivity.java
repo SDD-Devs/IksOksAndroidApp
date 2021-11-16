@@ -2,7 +2,9 @@ package com.example.iksoksandroidapp;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -25,5 +27,6 @@ public class SettingsActivity extends AppCompatActivity {
         //SharedPreferences prefs = getSharedPreferences("theme", Context.MODE_PRIVATE);
         //int resId = prefs.getInt("resId", R.style.lightBlueTheme);
         //setTheme(resId);
+
     }
 }

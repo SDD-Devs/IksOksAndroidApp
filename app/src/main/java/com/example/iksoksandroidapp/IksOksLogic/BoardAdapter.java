@@ -20,8 +20,6 @@ import androidx.annotation.Nullable;
 
 import com.example.iksoksandroidapp.R;
 
-import java.util.ArrayList;
-
 public class BoardAdapter extends ArrayAdapter<Tile>{
 
     //Data Members
@@ -47,21 +45,26 @@ public class BoardAdapter extends ArrayAdapter<Tile>{
         Tile tile = getItem(position);
         TextView txt_TileState = (TextView) convertView.findViewById(R.id.value);
 
-
-
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d("[TestLog]", "Tile clicked!");
+                if (!game.playTile(position)) return;
+                    txt_TileState.setText(GameManager.getStringFromTileState(game.getBoard().getTileByID(position).getState()));
 
-                game.playTile(position);
+                switch (game.getGameState())
+                {
+                    case TIE:
+                        break;
+                    case IKS_WON:
+                        break;
+                    case OKS_WON:
+                        break;
+                    case IN_PROGRESS:
 
-                if (game.getBoard().getTileByID(position).getState().toString() == "IKS")
-                {
-                    txt_TileState.setText("x");
-                }else
-                {
-                    txt_TileState.setText("o");
+                        break;
                 }
+
 
             }
         });

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">IksOksAndroidApp</string>
+    <string name="classic_title">Classic X/O</string>
 </resources>
