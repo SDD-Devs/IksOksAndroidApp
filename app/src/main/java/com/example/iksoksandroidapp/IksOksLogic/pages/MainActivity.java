@@ -1,12 +1,12 @@
-package com.example.iksoksandroidapp;
+package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
+
+import com.example.iksoksandroidapp.R;
 
 public class MainActivity extends AppCompatActivity {
     @Override

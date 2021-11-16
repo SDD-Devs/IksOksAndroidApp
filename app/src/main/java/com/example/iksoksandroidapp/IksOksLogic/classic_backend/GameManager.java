@@ -1,4 +1,4 @@
-package com.example.iksoksandroidapp.IksOksLogic;
+package com.example.iksoksandroidapp.IksOksLogic.classic_backend;
 
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
 import com.example.iksoksandroidapp.IksOksLogic.enums.PlayerType;

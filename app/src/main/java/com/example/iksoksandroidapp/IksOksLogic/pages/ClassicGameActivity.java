@@ -1,19 +1,17 @@
-package com.example.iksoksandroidapp;
+package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.example.iksoksandroidapp.IksOksLogic.BoardAdapter;
-import com.example.iksoksandroidapp.IksOksLogic.Game;
-import com.example.iksoksandroidapp.IksOksLogic.GameManager;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.BoardAdapter;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Game;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
+import com.example.iksoksandroidapp.R;
 
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Timer;
 import java.util.TimerTask;

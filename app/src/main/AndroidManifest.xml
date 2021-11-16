@@ -10,13 +10,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IksOksAndroidApp">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".IksOksLogic.pages.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".ClassicGameActivity"
+            android:name=".IksOksLogic.pages.ClassicGameActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".IksOksLogic.pages.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,6 +24,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".IksOksLogic.pages.PopUp"
+            android:theme="@style/PopupTheme" />
     </application>
 
 </manifest>
