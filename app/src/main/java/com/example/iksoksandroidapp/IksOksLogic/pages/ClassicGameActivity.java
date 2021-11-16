@@ -34,11 +34,12 @@ public class ClassicGameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_classic_game);
-
-
+        
         //Instantiate Game
         GameManager.startNewGame();
         game = GameManager.getGame();
+        
+        
 
         //Initialization
         gv_board = (GridView) findViewById(R.id.gridView);

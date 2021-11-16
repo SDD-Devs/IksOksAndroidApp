@@ -1,19 +1,24 @@
 package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import android.app.Activity;
-import android.app.GameManager;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.R;
 
 public class PopUp extends Activity {
 
     //Declaration
     TextView txtResults;
+    Button btnMenu;
+    Button btnReplay;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -22,6 +27,9 @@ public class PopUp extends Activity {
 
         //Initialization
         txtResults = (TextView) findViewById(R.id.txtResultLabel);
+        btnMenu = (Button) findViewById(R.id.btnMenu);
+        btnReplay = (Button) findViewById(R.id.btnReplay);
+
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -31,7 +39,41 @@ public class PopUp extends Activity {
 
         getWindow().setLayout((int)(width*0.6), (int)(height*0.4));
 
+        //Get the data from the Intent
         Bundle extras = getIntent().getExtras();
         txtResults.setText(extras.get("result").toString());
+
+        btnMenu.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        MenuBtnFunction();
+                    }
+                });
+
+        btnReplay.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ReplayBtnFunction();
+            }
+        });
+
     }
+
+    private void MenuBtnFunction()
+    {
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
+    }
+
+    private void ReplayBtnFunction()
+    {
+        //Load an intent without screens animation of reloading.
+        Intent intent = new Intent(this, ClassicGameActivity.class);
+        finish();
+        overridePendingTransition(0, 0);
+        startActivity(intent);
+        overridePendingTransition(0, 0);
+    }
+
+
 }
