@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.iksoksandroidapp.BluetoothMode;
 import com.example.iksoksandroidapp.R;
 
 public class MainActivity extends AppCompatActivity {
@@ -30,4 +31,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void onButtonBlueClick(View view) {
+        Intent enterClassic = new Intent(this, BluetoothMode.class);
+        startActivity(enterClassic);
+    }
 }
