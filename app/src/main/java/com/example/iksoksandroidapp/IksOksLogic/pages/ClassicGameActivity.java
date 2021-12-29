@@ -55,7 +55,7 @@ public class ClassicGameActivity extends AppCompatActivity {
 
                 String timestamp = new Timestamp(game.getPlayTimeMilliseconds()).toString();
                 timestamp = timestamp.substring(14,19);
-                txt_TimerLabel.setText(timestamp);
+                //txt_TimerLabel.setText(timestamp);
             }
         };
         timer = new Timer();

@@ -47,8 +47,13 @@ public class MainActivity extends AppCompatActivity {
         startActivity(enterClassic);
     }
 
-    public void onButtonCustomClick(View view) {
-
+    public void onButtonCustomClick(View view)
+    {
+        //empty for now
+    }
+    public void onButtonBluetoothClick(View view) {
+        Intent intent = new Intent(this, BluetoothActivity.class);
+        startActivity(intent);
     }
 
 }

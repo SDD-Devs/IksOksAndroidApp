@@ -1,55 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.pages.MainActivity">
+    tools:context=".IksOksLogic.pages.MainActivity"
+    android:orientation="vertical">
+
+    <ImageButton
+        android:id="@+id/settingsButton"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:scaleType="fitCenter"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:background="#0000"
+        android:onClick="openSettingsActivity"
+        app:srcCompat="@drawable/settingsicon" />
 
     <Button
         android:id="@+id/classicButton"
-        android:layout_width="224dp"
-        android:layout_height="69dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="50dp"
         android:background="#584473"
         android:fontFamily="@font/roboto_medium"
         android:onClick="onButtonClassicClick"
         android:text="CLASSIC"
-        android:textSize="35sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.347" />
+        android:textSize="20dp"/>
 
     <Button
         android:id="@+id/customButton"
-        android:layout_width="224dp"
-        android:layout_height="69dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="50dp"
         android:background="#584473"
         android:fontFamily="@font/roboto_medium"
         android:onClick="onButtonCustomClick"
         android:text="CUSTOM"
-        android:textSize="35sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/classicButton"
-        app:layout_constraintVertical_bias="0.088" />
-
-    <ImageButton
-        android:id="@+id/settingsButton"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
-        android:scaleType="fitCenter"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:background="#0000"
-        android:onClick="openSettingsActivity"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/settingsicon" />
+        android:textSize="20sp"
+        />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/blueButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="50dp"
+        android:background="#584473"
+        android:fontFamily="@font/roboto_medium"
+        android:onClick="onButtonBluetoothClick"
+        android:text="BLUETOOTH"
+        android:textSize="20sp"
+        />
+
+
+
+
+
+</LinearLayout>
