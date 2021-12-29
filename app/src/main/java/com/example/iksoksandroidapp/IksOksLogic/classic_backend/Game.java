@@ -18,6 +18,7 @@ public class Game {
     private List<List<Integer>> winningPositions = new ArrayList<>();
 
     public Game() {
+
         this.board = new Board();
         this.gameState = GameState.IN_PROGRESS;
         this.currentTurn = PlayerType.IKS;

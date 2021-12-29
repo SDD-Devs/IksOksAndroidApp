@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.widget.GridView;
 import android.widget.TextView;
 
-import com.example.iksoksandroidapp.IksOksLogic.classic_backend.BoardAdapter;
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Game;
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
@@ -20,7 +19,6 @@ public class ClassicGameActivity extends AppCompatActivity {
 
 
     //Declaration
-    BoardAdapter boardAdapter;
     TimerTask timerTask;
     Timer timer;
     Game game;
@@ -42,13 +40,11 @@ public class ClassicGameActivity extends AppCompatActivity {
         
 
         //Initialization
-        gv_board = (GridView) findViewById(R.id.gridView);
+        //gv_board = (GridView) findViewById(R.id.gridView);
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
-        boardAdapter = new BoardAdapter(this, game);
-
 
         //Set the GridView adapter to the list of tiles.
-        gv_board.setAdapter(boardAdapter);
+        //gv_board.setAdapter(boardAdapter);
 
 
         timerTask = new TimerTask() {
