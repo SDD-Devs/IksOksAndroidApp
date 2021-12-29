@@ -88,7 +88,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             }
         });
 
-
+        lstAvailableDevices.setOnItemClickListener(BluetoothActivity.this);
 
     }
 
@@ -284,6 +284,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         String deviceName = availableDevices.get(i).getName();
         String deviceAddress = availableDevices.get(i).getAddress();
 
+        Log.d(TAG, "onItemClick: You clicked on a device! ["+deviceName+","+deviceAddress+"]");
 
         //Initiate the bond
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
