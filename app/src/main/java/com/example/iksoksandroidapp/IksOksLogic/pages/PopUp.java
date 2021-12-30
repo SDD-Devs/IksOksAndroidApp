@@ -19,6 +19,8 @@ public class PopUp extends Activity {
     TextView txtResults;
     Button btnMenu;
     Button btnReplay;
+    //Testirao replay dugme u igri
+    //Button btnReplayinGame;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -29,6 +31,8 @@ public class PopUp extends Activity {
         txtResults = (TextView) findViewById(R.id.txtResultLabel);
         btnMenu = (Button) findViewById(R.id.btnMenu);
         btnReplay = (Button) findViewById(R.id.btnReplay);
+        //Testirao replay dugme u igri
+        //btnReplayinGame = (Button) findViewById(R.id.btnReplayInGame);
 
 
         DisplayMetrics dm = new DisplayMetrics();
@@ -74,6 +78,5 @@ public class PopUp extends Activity {
         startActivity(intent);
         overridePendingTransition(0, 0);
     }
-
 
 }
