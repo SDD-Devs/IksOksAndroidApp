@@ -1,11 +1,14 @@
 package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.util.Log;
@@ -14,7 +17,9 @@ import android.widget.Button;
 import android.widget.GridView;
 import android.widget.TextView;
 
+import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BlueIksOksBoard;
 import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BluetoothConnectionService;
+import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BluetoothManager;
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Game;
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
@@ -34,38 +39,58 @@ public class BluetoothClassic extends AppCompatActivity {
     private final static String TAG = "[DEBUG/IksOks]";
 
     //GUI Controls
+    TextView txt_TimerLabel;
     Button btnSend;
+    BlueIksOksBoard blueIksOksBoard;
+
     BluetoothConnectionService mBluetoothConnectionService;
+    BluetoothManager bluetoothManager;
 
 
     //Declaration
     TimerTask timerTask;
     Timer timer;
-    Game game;
 
-    //UI Declaration
-    TextView txt_TimerLabel;
+
+    BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+            //incomingMessage.setText(text);
+            Log.d(TAG, "VRACENA PORUKA: "+text);
+
+            int position = Integer.parseInt(text);
+            GameManager.getGame().playTile(position);
+            blueIksOksBoard.invalidate();
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_classic);
 
-
+        //Inititalization
+        txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
+        bluetoothManager = new BluetoothManager();
         btnSend = (Button) findViewById(R.id.btnSend);
+        blueIksOksBoard = (BlueIksOksBoard) findViewById(R.id.blueIksOksBoard);
+
+
+        //Event Listeners
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //sendCommand();
+                sendCommand("1");
             }
         });
 
+        IntentFilter filterCmd = new IntentFilter("incomingMessage");
+        LocalBroadcastManager.getInstance(this).registerReceiver(CommandReceiver, filterCmd);
+
         //Instantiate Game
         GameManager.startNewGame();
-        game = GameManager.getGame();
-
-        //Initialization
-        txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
 
 
         timerTask = new TimerTask() {
@@ -74,45 +99,31 @@ public class BluetoothClassic extends AppCompatActivity {
                 if(GameManager.getGame().getGameState() != GameState.IN_PROGRESS)
                     timerTask.cancel();
 
-                String timestamp = new Timestamp(game.getPlayTimeMilliseconds()).toString();
+                String timestamp = new Timestamp(GameManager.getGame().getPlayTimeMilliseconds()).toString();
                 timestamp = timestamp.substring(14,19);
                 //txt_TimerLabel.setText(timestamp);
             }
         };
-        timer = new Timer();
-        timer.schedule(timerTask, 0, 1000);
-
+        new Timer().schedule(timerTask, 0, 1000);
 
 
     }
 
-    private final BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String cmd = intent.getStringExtra("theMessage");
-            Log.d("[COOmmmmmmmAND]", cmd);
-        }
-    };
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-    public void sendCommand() {
-        //Logika koje polje je kliknuto (Darkic)
+        unregisterReceiver(CommandReceiver);
+    }
 
+    public void sendCommand(String cmd) {
 
         //Parsiranje
-        String cmd = "Cmd 1";
         byte[] bytes = cmd.getBytes(Charset.defaultCharset());
 
         //Slanje
-        mBluetoothConnectionService.write(bytes);
+        BluetoothManager.getmBluetoothConnectionService().write(bytes);
     }
 
-    private boolean startBTConnection(BluetoothDevice mDevice, UUID myUuidInsecure) {
-        Log.d(TAG, "startBTConnection: Initiialize RFCOM Bluetooth Connection");
-        if(mDevice != null){
-            mBluetoothConnectionService.startClient(mDevice, myUuidInsecure);
-            return true;
-        }else {
-            return false;
-        }
-    }
+
 }

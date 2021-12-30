@@ -20,7 +20,10 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BlueIksOksBoard;
 import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BluetoothConnectionService;
+import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BluetoothManager;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.R;
 
 import org.parceler.Parcels;
@@ -32,10 +35,13 @@ import java.util.UUID;
 
 public class BluetoothActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-    //Constants
-    private final static String TAG = "[DEBUG/IksOks]";
-    public static final int REQUEST_ENABLE_BT = 999;
-    private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+//    //Constants
+//    private final static String TAG = "[DEBUG/IksOks]";
+//    public static final int REQUEST_ENABLE_BT = 999;
+//    private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+
+    public final static String TAG = "[DEBUG/IksOks]";
+
 
     //GUI Components Declaration
     Button btnOnOff;
@@ -45,16 +51,18 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     ListView lstAvailableDevices;
     Button btnSend;
 
-    //Bluetooth Setup Variables
-    BluetoothAdapter blueAdapter;
-    DeviceListAdapter mDeviceListAdapter;
-    ArrayList<BluetoothDevice> availableDevices;
-    BluetoothDevice myBlueDevice;
+    BluetoothManager blueManager;
 
-    //Bluetooth Transfer Data Variables
-    BluetoothConnectionService mBluetoothConnectionService;
-
-
+//    //Bluetooth Setup Variables
+//    BluetoothAdapter blueAdapter;
+//    DeviceListAdapter mDeviceListAdapter;
+//    ArrayList<BluetoothDevice> availableDevices;
+//    BluetoothDevice myBlueDevice;
+//
+//    //Bluetooth Transfer Data Variables
+//    BluetoothConnectionService mBluetoothConnectionService;
+//
+//
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,9 +78,11 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         btnSend = (Button) findViewById(R.id.btnSend);
 
 
-        //Variable Initialization
-        availableDevices = new ArrayList<>();
-        blueAdapter = BluetoothAdapter.getDefaultAdapter();
+        blueManager = new BluetoothManager();
+
+//        //Variable Initialization
+//        availableDevices = new ArrayList<>();
+//        blueAdapter = BluetoothAdapter.getDefaultAdapter();
 
         //Event Handlers
         btnOnOff.setOnClickListener(new View.OnClickListener() {
@@ -112,8 +122,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(BlueBondChangedReceiver, filter);
 
-        IntentFilter filterCmd = new IntentFilter("incomingMessage");
-        LocalBroadcastManager.getInstance(this).registerReceiver(CommandReceiver, filterCmd);
+
 
     }
 
@@ -125,7 +134,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         unregisterReceiver(BlueDicoverabilityReceiver);
         unregisterReceiver(BlueDiscoverReceiver);
         unregisterReceiver(BlueBondChangedReceiver);
-        unregisterReceiver(CommandReceiver);
+        //unregisterReceiver(CommandReceiver);
     }
 
 
@@ -135,7 +144,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_STATE_CHANGED)){
-                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, blueAdapter.ERROR);
+                int state = intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, blueManager.getBlueAdapter().ERROR);
                 switch (state){
                     case BluetoothAdapter.STATE_OFF:
                         Log.d(TAG, "BlueStateChangedReceiver: STATE_OFF");
@@ -159,7 +168,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
-                final int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, blueAdapter.ERROR);
+                final int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, blueManager.getBlueAdapter().ERROR);
 
                 switch (mode) {
                     case BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE:
@@ -190,11 +199,11 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             Log.d(TAG, "onReceive: ACTION FOUND.");
             if (action.equals(BluetoothDevice.ACTION_FOUND)){
                 BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
-                availableDevices.add(device);
+                blueManager.getAvailableDevices().add(device);
 
                 Log.d(TAG, "BlueDiscoverReceiver - Device Found: " + device.getName() + ": " + device.getAddress());
-                mDeviceListAdapter = new DeviceListAdapter(context, R.layout.device_adapter_view, availableDevices);
-                lstAvailableDevices.setAdapter(mDeviceListAdapter);
+                blueManager.setmDeviceListAdapter(new DeviceListAdapter(context, R.layout.device_adapter_view, blueManager.getAvailableDevices()));
+                lstAvailableDevices.setAdapter(blueManager.getmDeviceListAdapter());
             }
         }
     };
@@ -210,7 +219,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                 if(mDevice.getBondState() == BluetoothDevice.BOND_BONDED)
                 {
                     Log.d(TAG, "mBroadcastReceiver4: BOND_BONDED");
-                    myBlueDevice = mDevice;
+                    blueManager.setMyBlueDevice(mDevice);
                     Toast t = Toast.makeText(BluetoothActivity.this, "Device Connected to " + mDevice.getName(), Toast.LENGTH_LONG);
                     t.show();
                 }
@@ -227,24 +236,17 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         }
     };
 
-    BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String text = intent.getStringExtra("theMessage");
-            //incomingMessage.setText(text);
-            Log.d(TAG, "VRACENA PORUKA: "+text);
-        }
-    };
+
 
 
     private void BlueOnOff() {
         String feedback = "";
 
-        if(blueAdapter == null){
+        if(blueManager.getBlueAdapter() == null){
             //Bluetooth not supported by this device
             Log.d(TAG, "This device does not support bluetooth.");
         }
-        if(!blueAdapter.isEnabled())
+        if(!blueManager.getBlueAdapter().isEnabled())
         {
             //Bluetooth is off. Call intent to turn it on
             Intent enableBluetooth = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -255,10 +257,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
             feedback = "Bluetooth Turned On.";
         }
-        if(blueAdapter.isEnabled())
+        if(blueManager.getBlueAdapter().isEnabled())
         {
             //If on, turn it off.
-            blueAdapter.disable();
+            blueManager.getBlueAdapter().disable();
 
             IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED);
             registerReceiver(BlueStateChangedReceiver, filter);
@@ -284,32 +286,34 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
     private void BlueDiscover() {
         Log.d(TAG, "Looking for unpaired devices.");
-        availableDevices.clear();
 
-        if(blueAdapter.isDiscovering()){
+        if(blueManager.getAvailableDevices() != null)
+            blueManager.getAvailableDevices().clear();
+
+        if(blueManager.getBlueAdapter().isDiscovering()){
             //If already discovering start over
-            blueAdapter.cancelDiscovery();
+            blueManager.getBlueAdapter().cancelDiscovery();
 
             //Check Bluetooth Permission
             checkBTPermissions();
 
-            blueAdapter.startDiscovery();
+            blueManager.getBlueAdapter().startDiscovery();
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(BlueDiscoverReceiver, filter);
 
-        }else if(!blueAdapter.isDiscovering())
+        }else if(!blueManager.getBlueAdapter().isDiscovering())
         {
             //Check Bluetooth Permission
             checkBTPermissions();
 
-            blueAdapter.startDiscovery();
+            blueManager.getBlueAdapter().startDiscovery();
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(BlueDiscoverReceiver, filter);
         }
     }
 
     private void InitiateConnection() {
-        if(startBTConnection(myBlueDevice, MY_UUID_INSECURE)) {
+        if(startBTConnection(blueManager.getMyBlueDevice(), BluetoothManager.getMyUuidInsecure())) {
             Intent intent = new Intent(this, BluetoothClassic.class);
             startActivity(intent);
         }
@@ -341,7 +345,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     private boolean startBTConnection(BluetoothDevice mDevice, UUID myUuidInsecure) {
         Log.d(TAG, "startBTConnection: Initiialize RFCOM Bluetooth Connection");
         if(mDevice != null){
-            mBluetoothConnectionService.startClient(mDevice, myUuidInsecure);
+            blueManager.getmBluetoothConnectionService().startClient(mDevice, myUuidInsecure);
             return true;
         }else {
             return false;
@@ -350,10 +354,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        blueAdapter.cancelDiscovery();
+        blueManager.getBlueAdapter().cancelDiscovery();
 
-        String deviceName = availableDevices.get(i).getName();
-        String deviceAddress = availableDevices.get(i).getAddress();
+        String deviceName = blueManager.getAvailableDevices().get(i).getName();
+        String deviceAddress = blueManager.getAvailableDevices().get(i).getAddress();
 
         Log.d(TAG, "onItemClick: You clicked on a device! ["+deviceName+","+deviceAddress+"]");
 
@@ -361,10 +365,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
         {
             Log.d(TAG, "Trying to pair with device ["+deviceName+"/"+deviceAddress+"]");
-            availableDevices.get(i).createBond();
+            blueManager.getAvailableDevices().get(i).createBond();
 
-            myBlueDevice = availableDevices.get(i);
-            mBluetoothConnectionService = new BluetoothConnectionService(BluetoothActivity.this);
+            blueManager.setMyBlueDevice(blueManager.getAvailableDevices().get(i));
+            BluetoothManager.setmBluetoothConnectionService(new BluetoothConnectionService(BluetoothActivity.this));
         }
     }
 
@@ -377,7 +381,7 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         byte[] bytes = cmd.getBytes(Charset.defaultCharset());
 
         //Slanje
-        mBluetoothConnectionService.write(bytes);
+        blueManager.getmBluetoothConnectionService().write(bytes);
     }
 
 

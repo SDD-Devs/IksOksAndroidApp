@@ -25,8 +25,8 @@
         android:textAlignment="center"
         />
 
-    <com.example.iksoksandroidapp.IksOksLogic.classic_backend.IksOksBoard
-        android:id="@+id/iksOksBoard"
+    <com.example.iksoksandroidapp.IksOksLogic.blue_backend.BlueIksOksBoard
+        android:id="@+id/blueIksOksBoard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         custom:boardColor="#000000"
@@ -39,4 +39,5 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SEND"/>
+
 </LinearLayout>

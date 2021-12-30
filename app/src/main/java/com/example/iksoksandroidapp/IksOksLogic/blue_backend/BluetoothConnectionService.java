@@ -41,6 +41,13 @@ public class BluetoothConnectionService implements Serializable {
     private ProgressDialog mProgressDialog;
 
 
+    public BluetoothDevice getMyDevice() {
+        return myDevice;
+    }
+
+    public void setMyDevice(BluetoothDevice myDevice) {
+        this.myDevice = myDevice;
+    }
 
 
     public BluetoothConnectionService(Context context){
