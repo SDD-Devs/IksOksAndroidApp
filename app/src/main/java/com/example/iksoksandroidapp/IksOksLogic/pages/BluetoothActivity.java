@@ -1,6 +1,7 @@
 package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -11,6 +12,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +23,10 @@ import android.widget.Toast;
 import com.example.iksoksandroidapp.IksOksLogic.blue_backend.BluetoothConnectionService;
 import com.example.iksoksandroidapp.R;
 
+import org.parceler.Parcels;
+
+import java.io.Serializable;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -37,13 +43,17 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     Button btnDiscover;
     Button btnInitiateConnection;
     ListView lstAvailableDevices;
+    Button btnSend;
 
     //Bluetooth Setup Variables
     BluetoothAdapter blueAdapter;
     DeviceListAdapter mDeviceListAdapter;
     ArrayList<BluetoothDevice> availableDevices;
     BluetoothDevice myBlueDevice;
-    //Variables
+
+    //Bluetooth Transfer Data Variables
+    BluetoothConnectionService mBluetoothConnectionService;
+
 
 
     @Override
@@ -57,6 +67,8 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         btnDiscover = (Button) findViewById(R.id.btnDiscover);
         btnInitiateConnection = (Button) findViewById(R.id.btnInitiateConnection);
         lstAvailableDevices = (ListView) findViewById(R.id.lstAvailableDevices);
+        btnSend = (Button) findViewById(R.id.btnSend);
+
 
         //Variable Initialization
         availableDevices = new ArrayList<>();
@@ -87,19 +99,33 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
                 InitiateConnection();
             }
         });
+        btnSend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                sendCommand();
+            }
+        });
+
 
         lstAvailableDevices.setOnItemClickListener(BluetoothActivity.this);
+
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
+        registerReceiver(BlueBondChangedReceiver, filter);
+
+        IntentFilter filterCmd = new IntentFilter("incomingMessage");
+        LocalBroadcastManager.getInstance(this).registerReceiver(CommandReceiver, filterCmd);
 
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         unregisterReceiver(BlueStateChangedReceiver);
         unregisterReceiver(BlueDicoverabilityReceiver);
         unregisterReceiver(BlueDiscoverReceiver);
-        //unregisterReceiver(mBroadcastReceiver4);
-
+        unregisterReceiver(BlueBondChangedReceiver);
+        unregisterReceiver(CommandReceiver);
     }
 
 
@@ -173,7 +199,42 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         }
     };
 
+    private final BroadcastReceiver BlueBondChangedReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            final String action = intent.getAction();
+            if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
+            {
+                BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                //3 cases: bonded already | in process | broken bond
+                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDED)
+                {
+                    Log.d(TAG, "mBroadcastReceiver4: BOND_BONDED");
+                    myBlueDevice = mDevice;
+                    Toast t = Toast.makeText(BluetoothActivity.this, "Device Connected to " + mDevice.getName(), Toast.LENGTH_LONG);
+                    t.show();
+                }
+                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDING)
+                {
+                    Log.d(TAG, "mBroadcastReceiver4: BOND_BONDING");
+                }
+                if(mDevice.getBondState() == BluetoothDevice.BOND_NONE)
+                {
+                    Log.d(TAG, "mBroadcastReceiver4: BOND_NONE");
+                }
 
+            }
+        }
+    };
+
+    BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+            //incomingMessage.setText(text);
+            Log.d(TAG, "VRACENA PORUKA: "+text);
+        }
+    };
 
 
     private void BlueOnOff() {
@@ -248,7 +309,10 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
     }
 
     private void InitiateConnection() {
-
+        if(startBTConnection(myBlueDevice, MY_UUID_INSECURE)) {
+            Intent intent = new Intent(this, BluetoothClassic.class);
+            startActivity(intent);
+        }
     }
 
 
@@ -274,8 +338,15 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
         }
     }
 
-
-
+    private boolean startBTConnection(BluetoothDevice mDevice, UUID myUuidInsecure) {
+        Log.d(TAG, "startBTConnection: Initiialize RFCOM Bluetooth Connection");
+        if(mDevice != null){
+            mBluetoothConnectionService.startClient(mDevice, myUuidInsecure);
+            return true;
+        }else {
+            return false;
+        }
+    }
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -293,10 +364,21 @@ public class BluetoothActivity extends AppCompatActivity implements AdapterView.
             availableDevices.get(i).createBond();
 
             myBlueDevice = availableDevices.get(i);
-            //mBluetoothConnectionService = new BluetoothConnectionService(MainActivity.this);
-        }else{
-            Toast t = Toast.makeText(this,"Toast Not valid SDK", Toast.LENGTH_LONG);
-            t.show();
+            mBluetoothConnectionService = new BluetoothConnectionService(BluetoothActivity.this);
         }
     }
+
+    public void sendCommand() {
+        //Logika koje polje je kliknuto (Darkic)
+
+
+        //Parsiranje
+        String cmd = "Cmd 1";
+        byte[] bytes = cmd.getBytes(Charset.defaultCharset());
+
+        //Slanje
+        mBluetoothConnectionService.write(bytes);
+    }
+
+
 }
