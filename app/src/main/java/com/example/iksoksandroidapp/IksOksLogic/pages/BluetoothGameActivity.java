@@ -33,18 +33,14 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
-public class BluetoothClassic extends AppCompatActivity {
+public class BluetoothGameActivity extends AppCompatActivity {
 
     //Constants
     private final static String TAG = "[DEBUG/IksOks]";
 
     //GUI Controls
     TextView txt_TimerLabel;
-    Button btnSend;
     BlueIksOksBoard blueIksOksBoard;
-
-    BluetoothConnectionService mBluetoothConnectionService;
-    BluetoothManager bluetoothManager;
 
 
     //Declaration
@@ -55,6 +51,7 @@ public class BluetoothClassic extends AppCompatActivity {
     BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+
             String text = intent.getStringExtra("theMessage");
             //incomingMessage.setText(text);
             Log.d(TAG, "VRACENA PORUKA: "+text);
@@ -73,18 +70,8 @@ public class BluetoothClassic extends AppCompatActivity {
 
         //Inititalization
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
-        bluetoothManager = new BluetoothManager();
-        btnSend = (Button) findViewById(R.id.btnSend);
         blueIksOksBoard = (BlueIksOksBoard) findViewById(R.id.blueIksOksBoard);
 
-
-        //Event Listeners
-        btnSend.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                sendCommand("1");
-            }
-        });
 
         IntentFilter filterCmd = new IntentFilter("incomingMessage");
         LocalBroadcastManager.getInstance(this).registerReceiver(CommandReceiver, filterCmd);
@@ -112,17 +99,7 @@ public class BluetoothClassic extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         unregisterReceiver(CommandReceiver);
-    }
-
-    public void sendCommand(String cmd) {
-
-        //Parsiranje
-        byte[] bytes = cmd.getBytes(Charset.defaultCharset());
-
-        //Slanje
-        BluetoothManager.getmBluetoothConnectionService().write(bytes);
     }
 
 

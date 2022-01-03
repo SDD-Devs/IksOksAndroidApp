@@ -59,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
         //empty for now
     }
     public void onButtonBluetoothClick(View view) {
-        Intent intent = new Intent(this, BluetoothActivity.class);
+        Intent intent = new Intent(this, BluetoothSetupActivity.class);
         startActivity(intent);
     }
 

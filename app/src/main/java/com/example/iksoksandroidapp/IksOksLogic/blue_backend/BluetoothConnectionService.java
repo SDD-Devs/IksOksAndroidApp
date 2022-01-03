@@ -25,12 +25,10 @@ public class BluetoothConnectionService implements Serializable {
 
 
     //Constants
-    private final static String TAG = "[DEBUG/IksOks]";
-    private static final String appName = "MYAPP";
-    private static final UUID MY_UUID_INSECURE = UUID.fromString("8ce255c0-200a-11e0-ac64-0800200c9a66");
+    private final static String TAG = BluetoothManager.TAG;
 
 
-    //
+    //Data mambers
     Context myContext;
     private BluetoothAdapter blueAdapter;
     private BluetoothDevice myDevice;
@@ -67,8 +65,8 @@ public class BluetoothConnectionService implements Serializable {
         public AcceptThread() {
             BluetoothServerSocket tmp = null;
             try{
-                tmp = blueAdapter.listenUsingInsecureRfcommWithServiceRecord(appName, MY_UUID_INSECURE);
-                Log.d(TAG, "AcceptThread: Setting up server using: " + MY_UUID_INSECURE);
+                tmp = blueAdapter.listenUsingInsecureRfcommWithServiceRecord(BluetoothManager.appName, BluetoothManager.MY_UUID_INSECURE);
+                Log.d(TAG, "AcceptThread: Setting up server using: " + BluetoothManager.MY_UUID_INSECURE);
             }catch (IOException e){
                 Log.d(TAG, "[EXCEPTION] while setting up the server. ");
             }

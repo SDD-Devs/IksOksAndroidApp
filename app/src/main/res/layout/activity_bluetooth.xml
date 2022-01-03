@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.pages.BluetoothActivity"
+    tools:context=".IksOksLogic.pages.BluetoothGameActivity"
     android:orientation="vertical">
 
 
@@ -21,17 +21,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
-        <Button
-            android:id="@+id/btnOnOff"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#584473"
-            android:fontFamily="@font/roboto_medium"
-            android:text="ON/OFF"
-            android:textSize="15sp"
-            android:layout_weight="1"
-            android:layout_marginLeft="20dp"/>
 
 
         <Button
