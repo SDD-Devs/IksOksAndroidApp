@@ -18,23 +18,18 @@ import java.util.TimerTask;
 
 public class ClassicGameActivity extends AppCompatActivity {
 
-
     //Declaration
     TimerTask timerTask;
-    Timer timer;
     Game game;
-    ClassicGameActivity classicGameActivity;
 
     //UI Declaration
-    GridView gv_board;
     TextView txt_TimerLabel;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_classic_game);
-        
+
         //Instantiate Game
         GameManager.startNewGame();
         game = GameManager.getGame();
@@ -43,25 +38,28 @@ public class ClassicGameActivity extends AppCompatActivity {
         //Initialization
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
 
-
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(GameManager.getGame().getGameState() != GameState.IN_PROGRESS)
-                    timerTask.cancel();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
 
-                String timestamp = new Timestamp(game.getPlayTimeMilliseconds()).toString();
-                timestamp = timestamp.substring(14,19);
-                //txt_TimerLabel.setText(timestamp);
+                        if (GameManager.getGame().getGameState() != GameState.IN_PROGRESS) {
+                            timerTask.cancel();
+                        }
+
+                        String timestamp = new Timestamp(game.getPlayTimeMilliseconds()).toString();
+                        timestamp = timestamp.substring(14, 19);
+
+                        txt_TimerLabel.setText(timestamp);
+
+                    }
+                });
             }
         };
-        timer = new Timer();
-        timer.schedule(timerTask, 0, 1000);
-
+        new Timer().schedule(timerTask, 0, 100);
 
     }
-
-
-
 
 }
