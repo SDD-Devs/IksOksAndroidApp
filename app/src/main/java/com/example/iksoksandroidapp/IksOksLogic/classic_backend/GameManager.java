@@ -3,10 +3,12 @@ package com.example.iksoksandroidapp.IksOksLogic.classic_backend;
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
 import com.example.iksoksandroidapp.IksOksLogic.enums.PlayerType;
 import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
+import com.example.iksoksandroidapp.IksOksLogic.pages.ClassicGameActivity;
 
 public class GameManager {
 
     private static Game game;
+    private static ClassicGameActivity classicGameActivity;
 
     public static void startNewGame() {
         game = new Game();
@@ -14,6 +16,18 @@ public class GameManager {
 
     public static Game getGame() {
         return game;
+    }
+
+    public static void setGame(Game game) {
+        GameManager.game = game;
+    }
+
+    public static ClassicGameActivity getClassicGameActivity() {
+        return classicGameActivity;
+    }
+
+    public static void setClassicGameActivity(ClassicGameActivity classicGameActivity) {
+        GameManager.classicGameActivity = classicGameActivity;
     }
 
     public static PlayerType getPlayerTypeFromTileState(TileState tileState) {

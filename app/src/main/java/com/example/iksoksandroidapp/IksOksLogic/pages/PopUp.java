@@ -67,16 +67,20 @@ public class PopUp extends Activity {
     {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+
+        GameManager.setClassicGameActivity(null);
+
     }
 
     private void ReplayBtnFunction()
     {
+
         //Load an intent without screens animation of reloading.
-        Intent intent = new Intent(this, ClassicGameActivity.class);
+
         finish();
-        overridePendingTransition(0, 0);
-        startActivity(intent);
-        overridePendingTransition(0, 0);
+        GameManager.startNewGame();
+        GameManager.getClassicGameActivity().findViewById(R.id.iksOksBoard).invalidate();
+
     }
 
 }

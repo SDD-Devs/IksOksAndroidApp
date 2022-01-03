@@ -22,6 +22,7 @@ public class ClassicGameActivity extends AppCompatActivity {
     TimerTask timerTask;
     Timer timer;
     Game game;
+    ClassicGameActivity classicGameActivity;
 
     //UI Declaration
     GridView gv_board;
@@ -36,6 +37,7 @@ public class ClassicGameActivity extends AppCompatActivity {
         //Instantiate Game
         GameManager.startNewGame();
         game = GameManager.getGame();
+        GameManager.setClassicGameActivity(this);
 
         //Initialization
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
