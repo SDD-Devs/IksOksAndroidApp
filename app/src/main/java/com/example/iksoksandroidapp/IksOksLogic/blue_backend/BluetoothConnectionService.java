@@ -11,8 +11,6 @@ import android.util.Log;
 
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import org.parceler.Parcel;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;

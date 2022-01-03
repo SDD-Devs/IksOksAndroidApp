@@ -67,9 +67,6 @@ public class PopUp extends Activity {
     {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
-
-        GameManager.setClassicGameActivity(null);
-
     }
 
     private void ReplayBtnFunction()
@@ -79,7 +76,7 @@ public class PopUp extends Activity {
 
         finish();
         GameManager.startNewGame();
-        GameManager.getClassicGameActivity().findViewById(R.id.iksOksBoard).invalidate();
+        GameManager.getClassicGameActivity().get().findViewById(R.id.iksOksBoard).invalidate();
 
     }
 

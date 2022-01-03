@@ -11,6 +11,7 @@ import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
 import com.example.iksoksandroidapp.R;
 
+import java.lang.ref.SoftReference;
 import java.sql.Timestamp;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -37,7 +38,7 @@ public class ClassicGameActivity extends AppCompatActivity {
         //Instantiate Game
         GameManager.startNewGame();
         game = GameManager.getGame();
-        GameManager.setClassicGameActivity(this);
+        GameManager.setClassicGameActivity(new SoftReference<>(this));
 
         //Initialization
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);

@@ -5,10 +5,12 @@ import com.example.iksoksandroidapp.IksOksLogic.enums.PlayerType;
 import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
 import com.example.iksoksandroidapp.IksOksLogic.pages.ClassicGameActivity;
 
+import java.lang.ref.SoftReference;
+
 public class GameManager {
 
     private static Game game;
-    private static ClassicGameActivity classicGameActivity;
+    private static SoftReference<ClassicGameActivity> classicGameActivity;
 
     public static void startNewGame() {
         game = new Game();
@@ -22,11 +24,11 @@ public class GameManager {
         GameManager.game = game;
     }
 
-    public static ClassicGameActivity getClassicGameActivity() {
+    public static SoftReference<ClassicGameActivity> getClassicGameActivity() {
         return classicGameActivity;
     }
 
-    public static void setClassicGameActivity(ClassicGameActivity classicGameActivity) {
+    public static void setClassicGameActivity(SoftReference<ClassicGameActivity> classicGameActivity) {
         GameManager.classicGameActivity = classicGameActivity;
     }
 
