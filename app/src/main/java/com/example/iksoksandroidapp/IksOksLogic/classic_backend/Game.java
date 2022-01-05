@@ -73,6 +73,8 @@ public class Game {
 
     }
 
+
+
     public void calculateGameState() {
 
         // The Mode can be set to 0-1

@@ -19,14 +19,14 @@ import java.nio.charset.Charset;
 import java.util.UUID;
 
 
-public class BluetoothConnectionService implements Serializable {
+public class BluetoothConnectionService {
 
 
     //Constants
     private final static String TAG = BluetoothManager.TAG;
 
 
-    //Data mambers
+    //Data members
     Context myContext;
     private BluetoothAdapter blueAdapter;
     private BluetoothDevice myDevice;
@@ -37,15 +37,7 @@ public class BluetoothConnectionService implements Serializable {
     private ProgressDialog mProgressDialog;
 
 
-    public BluetoothDevice getMyDevice() {
-        return myDevice;
-    }
-
-    public void setMyDevice(BluetoothDevice myDevice) {
-        this.myDevice = myDevice;
-    }
-
-
+    //getters and setters
     public BluetoothConnectionService(Context context){
         myContext = context;
         blueAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -53,8 +45,7 @@ public class BluetoothConnectionService implements Serializable {
     }
 
 
-
-
+    //3 Thread class
     private class AcceptThread extends Thread{
 
         //Data members
@@ -99,7 +90,6 @@ public class BluetoothConnectionService implements Serializable {
             }
         }
     }
-
 
 
     private class ConnectThread extends Thread{
@@ -151,7 +141,6 @@ public class BluetoothConnectionService implements Serializable {
         }
 
     }
-
 
 
     private class ConnectedThread extends Thread {
@@ -233,29 +222,7 @@ public class BluetoothConnectionService implements Serializable {
     }
 
 
-    //Aditional Methods
-
-    private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
-        Log.d(TAG, "connected: Starting.");
-
-        // Start the thread to manage the connection and perform transmissions
-        mConnectedThread = new ConnectedThread(mmSocket);
-        mConnectedThread.start();
-    }
-
-    /**
-     * Write to the ConnectedThread in an unsynchronized manner
-     *
-     * @param out The bytes to write
-     * @see ConnectedThread#write(byte[])
-     */
-    public void write(byte[] out) {
-        // Synchronize a copy of the ConnectedThread
-        Log.d(TAG, "write: Write Called.");
-        //perform the write
-        mConnectedThread.write(out);
-    }
-
+    //Additional Methods
     public void startClient(BluetoothDevice device,UUID uuid){
         Log.d(TAG, "startClient: Started.");
 
@@ -267,10 +234,6 @@ public class BluetoothConnectionService implements Serializable {
         mConnectThread.start();
     }
 
-    /**
-     * Start the chat service. Specifically start AcceptThread to begin a
-     * session in listening (server) mode. Called by the Activity onResume()
-     */
     public synchronized void start() {
         Log.d(TAG, "start");
 
@@ -283,6 +246,21 @@ public class BluetoothConnectionService implements Serializable {
             mInsecureAcceptThread = new AcceptThread();
             mInsecureAcceptThread.start();
         }
+    }
+
+    private void connected(BluetoothSocket mmSocket, BluetoothDevice mmDevice) {
+        Log.d(TAG, "connected: Starting.");
+
+        // Start the thread to manage the connection and perform transmissions
+        mConnectedThread = new ConnectedThread(mmSocket);
+        mConnectedThread.start();
+    }
+
+    public void write(byte[] out) {
+        // Synchronize a copy of the ConnectedThread
+        Log.d(TAG, "write: Write Called.");
+        //perform the write
+        mConnectedThread.write(out);
     }
 
 

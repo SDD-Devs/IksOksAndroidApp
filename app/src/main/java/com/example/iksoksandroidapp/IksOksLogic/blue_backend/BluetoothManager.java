@@ -11,10 +11,12 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.pages.BluetoothGameActivity;
 import com.example.iksoksandroidapp.IksOksLogic.pages.BluetoothSetupActivity;
 import com.example.iksoksandroidapp.IksOksLogic.pages.DeviceListAdapter;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -34,17 +36,14 @@ public class BluetoothManager {
     private static ArrayList<BluetoothDevice> availableDevices = new ArrayList<>();
     private static BluetoothDevice myBlueDevice;
 
+
     //Bluetooth Transfer Data Variables
     private static BluetoothConnectionService mBluetoothConnectionService;
     private static Context BlueSetupContext;
     private static ArrayList<BroadcastReceiver> bReceivers = new ArrayList<>();
 
 
-
-    public static void loadContext(Context context) {
-        BlueSetupContext = context;
-    }
-
+    //getters and setters
     public static ArrayList<BroadcastReceiver> getbReceivers() {
         return bReceivers;
     }
@@ -69,20 +68,12 @@ public class BluetoothManager {
         return mBluetoothConnectionService;
     }
 
-    public static Context getBlueSetupContext() {
-        return BlueSetupContext;
-    }
-
     public static void setBlueAdapter(BluetoothAdapter blueAdapter) {
         BluetoothManager.blueAdapter = blueAdapter;
     }
 
     public static void setmDeviceListAdapter(DeviceListAdapter mDeviceListAdapter) {
         BluetoothManager.mDeviceListAdapter = mDeviceListAdapter;
-    }
-
-    public static void setAvailableDevices(ArrayList<BluetoothDevice> availableDevices) {
-        BluetoothManager.availableDevices = availableDevices;
     }
 
     public static void setMyBlueDevice(BluetoothDevice myBlueDevice) {
@@ -93,48 +84,38 @@ public class BluetoothManager {
         BluetoothManager.mBluetoothConnectionService = mBluetoothConnectionService;
     }
 
-    public static void setBlueSetupContext(Context blueSetupContext) {
-        BlueSetupContext = blueSetupContext;
-    }
-
-    public static void setbReceivers(ArrayList<BroadcastReceiver> bReceivers) {
-        BluetoothManager.bReceivers = bReceivers;
-    }
 
 
     //Methods for Event Handlers
-
     public static void BlueDiscoverability() {
         Intent DiscoverabilityIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         DiscoverabilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
         BlueSetupContext.startActivity(DiscoverabilityIntent);
 
         IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-        BlueSetupContext.registerReceiver(bReceivers.get(0),filter);
+        BlueSetupContext.registerReceiver(bReceivers.get(0), filter);
 
-        Toast t = Toast.makeText(BlueSetupContext,"Making device discoverable for 2 minutes.", Toast.LENGTH_LONG);
+        Toast t = Toast.makeText(BlueSetupContext, "Making device discoverable for 2 minutes.", Toast.LENGTH_LONG);
         t.show();
     }
 
     public static void BlueDiscover() {
         Log.d(TAG, "Looking for unpaired devices.");
 
-        if(availableDevices != null)
+        if (availableDevices != null)
             availableDevices.clear();
 
-        if(blueAdapter.isDiscovering()){
+        if (blueAdapter.isDiscovering()) {
             //If already discovering start over
             blueAdapter.cancelDiscovery();
 
             //Check Bluetooth Permission
             checkBTPermissions();
-
             blueAdapter.startDiscovery();
             IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             BlueSetupContext.registerReceiver(bReceivers.get(1), filter);
 
-        }else if(!blueAdapter.isDiscovering())
-        {
+        } else if (!blueAdapter.isDiscovering()) {
             //Check Bluetooth Permission
             checkBTPermissions();
 
@@ -145,19 +126,23 @@ public class BluetoothManager {
     }
 
     public static void InitiateConnection() {
-        if(startBTConnection(myBlueDevice, MY_UUID_INSECURE)){
-            Intent intent = new Intent(BlueSetupContext, BluetoothGameActivity.class);
-            BlueSetupContext.startActivity(intent);
-        }
+        startBTConnection(myBlueDevice, MY_UUID_INSECURE);
+
+        Intent intent = new Intent(BlueSetupContext, BluetoothGameActivity.class);
+        //BlueSetupContext.startActivity(intent);
+
+        //sendCommand("AAA");
     }
 
 
 
     //Additional Methods
-//Additional Methods
+    public static void loadContext(Context context) {
+        BlueSetupContext = context;
+    }
+
     private static void checkBTPermissions() {
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP)
-        {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP) {
             Log.d(TAG, "Checking SDK version.");
             int permissionCheck = 0;
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -170,19 +155,27 @@ public class BluetoothManager {
                     //BlueSetupContext.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1001); //Any number
                 }
             }
-        }else
-        {
+        } else {
             Log.d(TAG, "checkBTPermissions: No need to check permissions. SDK version < LOLLIPOP.");
         }
     }
 
     private static boolean startBTConnection(BluetoothDevice mDevice, UUID myUuidInsecure) {
         Log.d(TAG, "startBTConnection: Initiialize RFCOM Bluetooth Connection");
-        if(mDevice != null){
+        if (mDevice != null) {
             mBluetoothConnectionService.startClient(mDevice, myUuidInsecure);
             return true;
-        }else {
+        } else {
             return false;
         }
     }
+
+    public static void sendCommand(String cmd) {
+        //Parsiranje
+        byte[] bytes = cmd.getBytes(Charset.defaultCharset());
+        //Slanje
+        mBluetoothConnectionService.write(bytes);
+    }
+
+
 }

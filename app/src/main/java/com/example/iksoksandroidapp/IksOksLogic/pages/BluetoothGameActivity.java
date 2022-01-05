@@ -35,8 +35,10 @@ import java.util.UUID;
 
 public class BluetoothGameActivity extends AppCompatActivity {
 
+
     //Constants
     private final static String TAG = "[DEBUG/IksOks]";
+
 
     //GUI Controls
     TextView txt_TimerLabel;
@@ -48,30 +50,14 @@ public class BluetoothGameActivity extends AppCompatActivity {
     Timer timer;
 
 
-    BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-
-            String text = intent.getStringExtra("theMessage");
-            //incomingMessage.setText(text);
-            Log.d(TAG, "VRACENA PORUKA: "+text);
-
-            int position = Integer.parseInt(text);
-            GameManager.getGame().playTile(position);
-            blueIksOksBoard.invalidate();
-
-        }
-    };
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth_classic);
 
-        //Inititalization
+        //Initialization
         txt_TimerLabel = (TextView) findViewById(R.id.lbl_Timer);
         blueIksOksBoard = (BlueIksOksBoard) findViewById(R.id.blueIksOksBoard);
-
 
         IntentFilter filterCmd = new IntentFilter("incomingMessage");
         LocalBroadcastManager.getInstance(this).registerReceiver(CommandReceiver, filterCmd);
@@ -83,11 +69,11 @@ public class BluetoothGameActivity extends AppCompatActivity {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                if(GameManager.getGame().getGameState() != GameState.IN_PROGRESS)
+                if (GameManager.getGame().getGameState() != GameState.IN_PROGRESS)
                     timerTask.cancel();
 
                 String timestamp = new Timestamp(GameManager.getGame().getPlayTimeMilliseconds()).toString();
-                timestamp = timestamp.substring(14,19);
+                timestamp = timestamp.substring(14, 19);
                 //txt_TimerLabel.setText(timestamp);
             }
         };
@@ -102,5 +88,18 @@ public class BluetoothGameActivity extends AppCompatActivity {
         unregisterReceiver(CommandReceiver);
     }
 
+
+    //Broadcast receiver
+    BroadcastReceiver CommandReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            String text = intent.getStringExtra("theMessage");
+            Log.d(TAG, "Received from Bluetooth device: " + text);
+
+            int position = Integer.parseInt(text);
+            GameManager.getGame().playTile(position);
+            blueIksOksBoard.invalidate();
+        }
+    };
 
 }

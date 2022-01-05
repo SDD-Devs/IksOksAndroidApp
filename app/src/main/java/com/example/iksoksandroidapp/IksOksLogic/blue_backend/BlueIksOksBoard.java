@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -162,12 +163,14 @@ public class BlueIksOksBoard extends View {
 
         paint.setColor(OColor);
 
-        canvas.drawOval(
-                (float) (col * cellSize + cellSize * 0.2),
-                (float) (row * cellSize + cellSize * 0.2),
-                (float) ((col * cellSize + cellSize) - cellSize * 0.2),
-                (float) ((row * cellSize + cellSize) - cellSize * 0.2),
-                paint);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            canvas.drawOval(
+                    (float) (col * cellSize + cellSize * 0.2),
+                    (float) (row * cellSize + cellSize * 0.2),
+                    (float) ((col * cellSize + cellSize) - cellSize * 0.2),
+                    (float) ((row * cellSize + cellSize) - cellSize * 0.2),
+                    paint);
+        }
 
     }
 

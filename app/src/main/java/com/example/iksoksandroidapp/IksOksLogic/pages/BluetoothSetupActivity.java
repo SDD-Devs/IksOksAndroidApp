@@ -28,7 +28,7 @@ import java.util.UUID;
 
 public class BluetoothSetupActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-
+    //Constants
     public final static String TAG = "[DEBUG/IksOks]";
 
 
@@ -40,13 +40,11 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
     Button btnSend;
 
 
-
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
+
 
         //GUI Controls Initialization
         btnDiscoverability = (Button) findViewById(R.id.btnDiscoverability);
@@ -72,23 +70,25 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
         btnInitiateConnection.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                BluetoothManager.InitiateConnection();
+                //BluetoothManager.InitiateConnection();
             }
         });
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                sendCommand();
+                BluetoothManager.sendCommand("test");
             }
         });
 
 
         lstAvailableDevices.setOnItemClickListener(BluetoothSetupActivity.this);
 
-
+        //Player's next move receiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_BOND_STATE_CHANGED);
         registerReceiver(BlueBondChangedReceiver, filter);
 
+        registerReceiver(BlueConnectedReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_CONNECTED));
+        registerReceiver(BlueConnectedReceiver, new IntentFilter(BluetoothDevice.ACTION_ACL_DISCONNECTED));
 
         //Bluetooth manager Setup
         BluetoothManager.setBlueAdapter(BluetoothAdapter.getDefaultAdapter());
@@ -109,19 +109,25 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
     }
 
 
-    //Getters and Setters
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        BluetoothManager.getBlueAdapter().cancelDiscovery();
 
+        String deviceName = BluetoothManager.getAvailableDevices().get(i).getName();
+        String deviceAddress = BluetoothManager.getAvailableDevices().get(i).getAddress();
 
-    public BroadcastReceiver getBlueDicoverabilityReceiver() {
-        return BlueDicoverabilityReceiver;
-    }
+        Log.d(TAG, "onItemClick: You clicked on a device! [" + deviceName + "," + deviceAddress + "]");
 
-    public BroadcastReceiver getBlueDiscoverReceiver() {
-        return BlueDiscoverReceiver;
-    }
+        //Initiate the bond
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            Log.d(TAG, "Trying to pair with device [" + deviceName + "/" + deviceAddress + "]");
+            BluetoothManager.getAvailableDevices().get(i).createBond();
 
-    public BroadcastReceiver getBlueBondChangedReceiver() {
-        return BlueBondChangedReceiver;
+            BluetoothManager.setMyBlueDevice(BluetoothManager.getAvailableDevices().get(i));
+            BluetoothManager.setmBluetoothConnectionService(new BluetoothConnectionService(BluetoothSetupActivity.this));
+
+            BluetoothManager.InitiateConnection();
+        }
     }
 
 
@@ -132,7 +138,7 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
         @Override
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
-            if(action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
+            if (action.equals(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED)) {
                 final int mode = intent.getIntExtra(BluetoothAdapter.EXTRA_SCAN_MODE, BluetoothManager.getBlueAdapter().ERROR);
 
                 switch (mode) {
@@ -162,8 +168,8 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
             Log.d(TAG, "onReceive: ACTION FOUND.");
-            if (action.equals(BluetoothDevice.ACTION_FOUND)){
-                BluetoothDevice device = intent.getParcelableExtra (BluetoothDevice.EXTRA_DEVICE);
+            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 BluetoothManager.getAvailableDevices().add(device);
 
                 Log.d(TAG, "BlueDiscoverReceiver - Device Found: " + device.getName() + ": " + device.getAddress());
@@ -177,23 +183,19 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if(action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED))
-            {
+            if (action.equals(BluetoothDevice.ACTION_BOND_STATE_CHANGED)) {
                 BluetoothDevice mDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 //3 cases: bonded already | in process | broken bond
-                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDED)
-                {
+                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDED) {
                     Log.d(TAG, "mBroadcastReceiver4: BOND_BONDED");
                     BluetoothManager.setMyBlueDevice(mDevice);
-                    Toast t = Toast.makeText(getApplicationContext(), "Device Connected to " + mDevice.getName(), Toast.LENGTH_LONG);
+                    Toast t = Toast.makeText(BluetoothSetupActivity.this, "Device Connected to " + mDevice.getName(), Toast.LENGTH_LONG);
                     t.show();
                 }
-                if(mDevice.getBondState() == BluetoothDevice.BOND_BONDING)
-                {
+                if (mDevice.getBondState() == BluetoothDevice.BOND_BONDING) {
                     Log.d(TAG, "mBroadcastReceiver4: BOND_BONDING");
                 }
-                if(mDevice.getBondState() == BluetoothDevice.BOND_NONE)
-                {
+                if (mDevice.getBondState() == BluetoothDevice.BOND_NONE) {
                     Log.d(TAG, "mBroadcastReceiver4: BOND_NONE");
                 }
 
@@ -202,92 +204,24 @@ public class BluetoothSetupActivity extends AppCompatActivity implements Adapter
     };
 
 
-
-
-
-//    private void BlueDiscoverability() {
-//        Intent DiscoverabilityIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-//        DiscoverabilityIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 120);
-//        startActivity(DiscoverabilityIntent);
-//
-//        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_SCAN_MODE_CHANGED);
-//        registerReceiver(BlueDicoverabilityReceiver,filter);
-//
-//        Toast t = Toast.makeText(getApplicationContext(),"Making device discoverable for 2 minutes.", Toast.LENGTH_LONG);
-//        t.show();
-//    }
-//
-//    private void BlueDiscover() {
-//        Log.d(TAG, "Looking for unpaired devices.");
-//
-//        if(blueManager.getAvailableDevices() != null)
-//            blueManager.getAvailableDevices().clear();
-//
-//        if(blueManager.getBlueAdapter().isDiscovering()){
-//            //If already discovering start over
-//            blueManager.getBlueAdapter().cancelDiscovery();
-//
-//            //Check Bluetooth Permission
-//            checkBTPermissions();
-//
-//            blueManager.getBlueAdapter().startDiscovery();
-//            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-//            registerReceiver(BlueDiscoverReceiver, filter);
-//
-//        }else if(!blueManager.getBlueAdapter().isDiscovering())
-//        {
-//            //Check Bluetooth Permission
-//            checkBTPermissions();
-//
-//            blueManager.getBlueAdapter().startDiscovery();
-//            IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-//            registerReceiver(BlueDiscoverReceiver, filter);
-//        }
-//    }
-//
-//    private void InitiateConnection() {
-//        if(startBTConnection(blueManager.getMyBlueDevice(), BluetoothManager.getMyUuidInsecure())) {
-//            Intent intent = new Intent(this, BluetoothClassic.class);
-//            startActivity(intent);
-//        }
-//    }
-
-
-
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        BluetoothManager.getBlueAdapter().cancelDiscovery();
-
-        String deviceName = BluetoothManager.getAvailableDevices().get(i).getName();
-        String deviceAddress = BluetoothManager.getAvailableDevices().get(i).getAddress();
-
-        Log.d(TAG, "onItemClick: You clicked on a device! ["+deviceName+","+deviceAddress+"]");
-
-        //Initiate the bond
-        if(Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN_MR2)
+    private final BroadcastReceiver BlueConnectedReceiver = new BroadcastReceiver()
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
         {
-            Log.d(TAG, "Trying to pair with device ["+deviceName+"/"+deviceAddress+"]");
-            BluetoothManager.getAvailableDevices().get(i).createBond();
-
-            BluetoothManager.setMyBlueDevice(BluetoothManager.getAvailableDevices().get(i));
-            BluetoothManager.setmBluetoothConnectionService(new BluetoothConnectionService(BluetoothSetupActivity.this));
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_ACL_CONNECTED.equals(action))
+            {
+                Log.d(TAG, "Device is connected.");
+                //BluetoothManager.InitiateConnection();
+            }
+            if (BluetoothDevice.ACTION_ACL_DISCONNECTED.equals(action))
+            {
+                Log.d(TAG, "Device is disconnected.");
+            }
         }
-    }
+    };
 
-
-
-    public void sendCommand() {
-        //Logika koje polje je kliknuto (Darkic)
-
-
-        //Parsiranje
-        String cmd = "Cmd 1";
-        byte[] bytes = cmd.getBytes(Charset.defaultCharset());
-
-        //Slanje
-        BluetoothManager.getmBluetoothConnectionService().write(bytes);
-    }
 
 
 

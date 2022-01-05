@@ -32,20 +32,6 @@
         android:text="CLASSIC"
         android:textSize="20dp"/>
 
-    <Button
-        android:id="@+id/customButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:layout_marginTop="50dp"
-        android:background="#584473"
-        android:fontFamily="@font/roboto_medium"
-        android:onClick="onButtonCustomClick"
-        android:text="CUSTOM"
-        android:textSize="20sp"
-        />
-
 
     <Button
         android:id="@+id/blueButton"
@@ -61,7 +47,19 @@
         android:textSize="20sp"
         />
 
-
+    <Button
+        android:id="@+id/customButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginTop="50dp"
+        android:background="#584473"
+        android:fontFamily="@font/roboto_medium"
+        android:onClick="onButtonNetworkClick"
+        android:text="Network"
+        android:textSize="20sp"
+        />
 
 
 
