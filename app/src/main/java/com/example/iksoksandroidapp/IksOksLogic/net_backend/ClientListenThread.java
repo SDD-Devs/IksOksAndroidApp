@@ -1,11 +1,11 @@
 package com.example.iksoksandroidapp.IksOksLogic.net_backend;
 
+import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
-import android.widget.TextView;
 
-import com.example.iksoksandroidapp.IksOksLogic.NetworkGameActivity;
-import com.example.iksoksandroidapp.IksOksLogic.pages.BluetoothSetupActivity;
+import com.example.iksoksandroidapp.IksOksLogic.pages.NetworkGameActivity;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
 import com.example.iksoksandroidapp.IksOksLogic.pages.NetworkSetupActivity;
 import com.example.iksoksandroidapp.R;
 
@@ -15,7 +15,7 @@ public class ClientListenThread implements Runnable {
 
     DataInputStream in;
     private volatile boolean listenThreadRunning = true;
-
+    NetIksOksBoard netIksOksBoard;
 
 
     public ClientListenThread(DataInputStream din) {
@@ -28,7 +28,7 @@ public class ClientListenThread implements Runnable {
         while (listenThreadRunning) {
             try {
 
-                byte[] buffer = new byte[150];
+                byte[] buffer = new byte[20];
                 in.read(buffer);
 
                 //String received = in.readUTF();
@@ -41,24 +41,43 @@ public class ClientListenThread implements Runnable {
                 }
 
                 String cmd =  sb.toString().trim();
+                Log.d("[NET]", "Received: " + cmd);
                 String[] cmdArr = cmd.split("-");
 
                 //Proccess received string
                 switch(cmdArr[0]){
                     case "RCREATED":
                         Log.d("[NET]", "Room created. Open activity");
+                        NetworkSetupActivity.instance.client.gameRoomId = Integer.parseInt(cmdArr[1]);
                         Intent cGameIntent = new Intent(NetworkSetupActivity.instance, NetworkGameActivity.class);
                         cGameIntent.putExtra("roomID", cmdArr[1]);
                         NetworkSetupActivity.instance.startActivity(cGameIntent);
                         break;
                     case "RJOINED":
                         Log.d("[NET]", "Room Joined. open activity.");
+                        NetworkSetupActivity.instance.client.gameRoomId = Integer.parseInt(cmdArr[1]);
                         Intent jGameIntent = new Intent(NetworkSetupActivity.instance, NetworkGameActivity.class);
                         jGameIntent.putExtra("roomID", cmdArr[1]);
                         NetworkSetupActivity.instance.startActivity(jGameIntent);
                         break;
-                    default:
-                        Log.d("[NET]", "Received: " + cmd);
+
+                    case "GO":
+                        //Disable clicking
+                        Log.d("[NET]","This device SHOULD GO this turn");
+                        NetworkSetupActivity.instance.client.yourTurn = true;
+                        break;
+
+                    case "WAIT":
+                        Log.d("[NET]","This device SHOULD NOT GO this turn");
+                        //Enable clicking
+                        NetworkSetupActivity.instance.client.yourTurn = false;
+                        break;
+
+                    case "SE":
+                        netIksOksBoard = (NetIksOksBoard) NetworkGameActivity.instance.findViewById(R.id.netIksOksBoard);
+                        Log.d("[NET]", "About to play a tile #" + Integer.parseInt(cmdArr[1]));
+                        GameManager.getGame().playTile(Integer.parseInt(cmdArr[1]));
+                        netIksOksBoard.postInvalidate();
                         break;
                 }
 
@@ -66,7 +85,6 @@ public class ClientListenThread implements Runnable {
             } catch (Exception e) {
                 System.out.println("[EXCEPTION] connection problem");
                 listenThreadRunning = false;
-
             }
         }
     }

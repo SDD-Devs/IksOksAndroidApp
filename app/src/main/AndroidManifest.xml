@@ -20,7 +20,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.IksOksAndroidApp">
         <activity
-            android:name=".IksOksLogic.NetworkGameActivity"
+            android:name=".IksOksLogic.pages.NetworkGameActivity"
             android:exported="false" />
         <activity
             android:name=".IksOksLogic.pages.NetworkSetupActivity"

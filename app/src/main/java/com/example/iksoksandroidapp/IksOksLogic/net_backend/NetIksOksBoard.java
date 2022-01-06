@@ -1,0 +1,204 @@
+package com.example.iksoksandroidapp.IksOksLogic.net_backend;
+
+import android.content.Context;
+import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.Canvas;
+import android.graphics.Paint;
+import android.os.Build;
+import android.util.AttributeSet;
+import android.view.MotionEvent;
+import android.view.View;
+
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
+
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Game;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
+import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Tile;
+import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
+import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
+import com.example.iksoksandroidapp.IksOksLogic.pages.NetworkSetupActivity;
+import com.example.iksoksandroidapp.IksOksLogic.pages.PopUp;
+import com.example.iksoksandroidapp.R;
+
+public class NetIksOksBoard extends View {
+
+    private final int boardColor;
+    private final int XColor;
+    private final int OColor;
+    private final int winningLineColor;
+
+    private int cellSize = getWidth() / 3;
+
+    private final Paint paint = new Paint();
+
+    private static volatile boolean disableClick = false;
+
+    NetIksOksBoard netIksOksBoard;
+
+    public NetIksOksBoard(Context context, @Nullable AttributeSet attrs) {
+
+        super(context, attrs);
+
+        TypedArray typedArray = context.getTheme().obtainStyledAttributes(attrs, R.styleable.IksOksBoard, 0, 0);
+        netIksOksBoard = (NetIksOksBoard) findViewById(R.id.netIksOksBoard);
+
+        try {
+            boardColor = typedArray.getInteger(R.styleable.IksOksBoard_boardColor, 0);
+            XColor = typedArray.getInteger(R.styleable.IksOksBoard_XColor, 0);
+            OColor = typedArray.getInteger(R.styleable.IksOksBoard_OColor, 0);
+            winningLineColor = typedArray.getInteger(R.styleable.IksOksBoard_winningLineColor, 0);
+        } finally {
+            typedArray.recycle();
+        }
+
+    }
+
+    @Override
+    public boolean onTouchEvent(MotionEvent motionEvent) {
+
+        if(!NetworkSetupActivity.instance.client.yourTurn)
+            return false;
+
+        Game game = GameManager.getGame();
+
+        float x = motionEvent.getX();
+        float y = motionEvent.getY();
+
+        int action = motionEvent.getAction();
+
+        if (action == MotionEvent.ACTION_DOWN) {
+
+            int row = (int) Math.ceil(y / cellSize) - 1;
+            int column = (int) Math.ceil(x / cellSize) - 1;
+            int position = oneDimensionalFromTwo(row, column);
+
+            if (!game.playTile(position)) {
+                return false;
+            }
+
+            //Send the play to another player.
+            NetworkSetupActivity.instance.client.sendMessage("SE-"+NetworkSetupActivity.instance.client.gameRoomId+"-"+position);
+
+            invalidate();
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    @Override
+    protected void onMeasure(int width, int height) {
+
+        super.onMeasure(width, height);
+
+        int dimension = Math.min(getMeasuredWidth(), getMeasuredHeight());
+        cellSize = dimension / 3;
+
+        setMeasuredDimension(dimension, dimension);
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    protected void onDraw(Canvas canvas) {
+
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setAntiAlias(true);
+
+        drawGameBoard(canvas);
+        drawMarkers(canvas);
+
+        Game game = GameManager.getGame();
+        if (game.getGameState() != GameState.IN_PROGRESS) {
+            Intent popupIntent = new Intent(getContext(), PopUp.class);
+            popupIntent.putExtra("result", game.getGameState().toString());
+            getContext().startActivity(popupIntent);
+        }
+
+    }
+
+    private void drawGameBoard(Canvas canvas) {
+
+        paint.setColor(boardColor);
+        paint.setStrokeWidth(16);
+
+        for (int c = 1; c < 3; c++) {
+            canvas.drawLine(cellSize * c, 0, cellSize * c, canvas.getWidth(), paint);
+        }
+
+        for (int r = 1; r < 3; r++) {
+            canvas.drawLine(0, cellSize * r, canvas.getWidth(), cellSize * r, paint);
+        }
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void drawMarkers(Canvas canvas) {
+
+        for (Tile tile : GameManager.getGame().getBoard().getTiles()) {
+            if (tile.getState().equals(TileState.IKS)) {
+                drawX(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
+            } else if (tile.getState().equals(TileState.OKS)) {
+                drawO(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
+            }
+        }
+
+    }
+
+    private void drawX(Canvas canvas, int row, int col) {
+
+        paint.setColor(XColor);
+
+        canvas.drawLine(
+                (float) ((col + 1) * cellSize - cellSize * 0.2),
+                (float) (row * cellSize + cellSize * 0.2),
+                (float) (col * cellSize + cellSize * 0.2),
+                (float) ((row + 1) * cellSize - cellSize * 0.2),
+                paint);
+
+        canvas.drawLine(
+                (float) (col * cellSize + cellSize * 0.2),
+                (float) (row * cellSize + cellSize * 0.2),
+                (float) ((col + 1) * cellSize - cellSize * 0.2),
+                (float) ((row + 1) * cellSize - cellSize * 0.2),
+                paint);
+
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    private void drawO(Canvas canvas, int row, int col) {
+
+        paint.setColor(OColor);
+
+        canvas.drawOval(
+                (float) (col * cellSize + cellSize * 0.2),
+                (float) (row * cellSize + cellSize * 0.2),
+                (float) ((col * cellSize + cellSize) - cellSize * 0.2),
+                (float) ((row * cellSize + cellSize) - cellSize * 0.2),
+                paint);
+
+    }
+
+    private int oneDimensionalFromTwo(int x, int y) {
+
+        return 3 * x + y;
+
+    }
+
+    private int[] twoDimensionalFromOne(int number) {
+
+        int[] xy = new int[2];
+
+        xy[0] = (number - (number % 3)) / 3;
+        xy[1] = number % 3;
+
+        return xy;
+
+    }
+
+}

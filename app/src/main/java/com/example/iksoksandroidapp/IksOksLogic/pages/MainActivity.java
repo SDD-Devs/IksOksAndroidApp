@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.testtheme);
-        mediaPlayer.setLooping(true);
-        mediaPlayer.start();
+//        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.testtheme);
+//        mediaPlayer.setLooping(true);
+//        mediaPlayer.start();
 
         startSettingsButtonRotation();
 

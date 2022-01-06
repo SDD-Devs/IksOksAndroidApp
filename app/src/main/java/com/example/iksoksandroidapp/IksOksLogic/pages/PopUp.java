@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
+import com.example.iksoksandroidapp.IksOksLogic.net_backend.NetIksOksBoard;
 import com.example.iksoksandroidapp.R;
 
 public class PopUp extends Activity {
@@ -67,16 +69,17 @@ public class PopUp extends Activity {
     {
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
+        NetworkSetupActivity.instance.client.sendMessage("EXIT-"+ NetworkSetupActivity.instance.client.getGameRoomId());
+        Log.d("[NET]", "Exit signal sent.");
     }
 
     private void ReplayBtnFunction()
     {
 
         //Load an intent without screens animation of reloading.
-
         finish();
         GameManager.startNewGame();
-        GameManager.getClassicGameActivity().get().findViewById(R.id.iksOksBoard).invalidate();
+        NetworkGameActivity.instance.findViewById(R.id.netIksOksBoard).invalidate();
 
     }
 

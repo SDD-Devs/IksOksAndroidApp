@@ -12,6 +12,9 @@ public class Client implements Runnable{
     private Socket cSocket;
     private DataOutputStream out;
     private DataInputStream in;
+    int gameRoomId;
+    static boolean yourTurn = false;
+
     String TAG = "[NET]";
 
     public Client(){
@@ -55,4 +58,8 @@ public class Client implements Runnable{
     }
 
 
+    //Getters and Setters
+    public int getGameRoomId() {
+        return gameRoomId;
+    }
 }
