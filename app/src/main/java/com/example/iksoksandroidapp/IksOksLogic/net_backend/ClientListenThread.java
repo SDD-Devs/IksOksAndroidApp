@@ -75,7 +75,7 @@ public class ClientListenThread implements Runnable {
 
                     case "SE":
                         netIksOksBoard = (NetIksOksBoard) NetworkGameActivity.instance.findViewById(R.id.netIksOksBoard);
-                        Log.d("[NET]", "About to play a tile #" + Integer.parseInt(cmdArr[1]));
+                        Log.d("[NET]", "About to play a bluetoothTile #" + Integer.parseInt(cmdArr[1]));
                         GameManager.getGame().playTile(Integer.parseInt(cmdArr[1]));
                         netIksOksBoard.postInvalidate();
                         break;

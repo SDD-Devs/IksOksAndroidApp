@@ -2,9 +2,15 @@ package com.example.iksoksandroidapp.IksOksLogic.pages;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.OvershootInterpolator;
@@ -31,7 +37,16 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void startSettingsButtonRotation(){
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+
+        unregisterReceiver(broadcastReceiverBluetoothAdapterActionStateChanged);
+
+    }
+
+    private void startSettingsButtonRotation() {
 
         ImageButton imageButton = (ImageButton) findViewById(R.id.settingsButton);
 
@@ -54,14 +69,48 @@ public class MainActivity extends AppCompatActivity {
         startActivity(enterClassic);
     }
 
-    public void onButtonNetworkClick(View view)
-    {
+    public void onButtonNetworkClick(View view) {
         Intent intent = new Intent(this, NetworkSetupActivity.class);
         startActivity(intent);
     }
+
     public void onButtonBluetoothClick(View view) {
-        Intent intent = new Intent(this, BluetoothSetupActivity.class);
-        startActivity(intent);
+
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if (bluetoothAdapter == null) {
+            return;
+        }
+
+        if (!bluetoothAdapter.isEnabled()) {
+
+            registerReceiver(broadcastReceiverBluetoothAdapterActionStateChanged, new IntentFilter(BluetoothAdapter.ACTION_STATE_CHANGED));
+
+            Intent enableBTIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivity(enableBTIntent);
+
+        } else {
+
+            Intent bluetoothSetupIntent = new Intent(MainActivity.this, BluetoothSetupActivity.class);
+            startActivity(bluetoothSetupIntent);
+
+        }
+
     }
+
+    private final BroadcastReceiver broadcastReceiverBluetoothAdapterActionStateChanged = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BluetoothAdapter.ACTION_STATE_CHANGED)) {
+                if (intent.getIntExtra(BluetoothAdapter.EXTRA_STATE, BluetoothAdapter.ERROR) == BluetoothAdapter.STATE_ON) {
+
+                    Intent bluetoothSetupIntent = new Intent(MainActivity.this, BluetoothSetupActivity.class);
+                    startActivity(bluetoothSetupIntent);
+
+                }
+            }
+
+        }
+    };
 
 }

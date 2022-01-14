@@ -1,4 +1,4 @@
-package com.example.iksoksandroidapp.IksOksLogic.classic_backend;
+package com.example.iksoksandroidapp.IksOksLogic.bluetooth_backend;
 
 import com.example.iksoksandroidapp.IksOksLogic.enums.GameState;
 import com.example.iksoksandroidapp.IksOksLogic.enums.PlayerType;
@@ -8,18 +8,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Game {
+public class BluetoothGame {
 
-    private Board board;
+    private BluetoothBoard bluetoothBoard;
     private GameState gameState;
     private PlayerType currentTurn;
     private long gameStartTime;
+    private PlayerType playerType;
 
     private List<List<Integer>> winningPositions = new ArrayList<>();
 
-    public Game() {
+    public BluetoothGame() {
 
-        this.board = new Board();
+        this.bluetoothBoard = new BluetoothBoard();
         this.gameState = GameState.IN_PROGRESS;
         this.currentTurn = PlayerType.IKS;
         this.gameStartTime = System.currentTimeMillis();
@@ -37,7 +38,7 @@ public class Game {
     }
 
     public void reset() {
-        board.reset();
+        bluetoothBoard.reset();
         gameState = GameState.IN_PROGRESS;
         gameStartTime = System.currentTimeMillis();
     }
@@ -52,7 +53,7 @@ public class Game {
 
     public boolean playTile(int tileID) {
 
-        Tile bluetoothTile = board.getTileByID(tileID);
+        BluetoothTile bluetoothTile = bluetoothBoard.getTileByID(tileID);
 
         if (!bluetoothTile.getState().equals(TileState.EMPTY)) return false;
         if (!gameState.equals(GameState.IN_PROGRESS)) return false;
@@ -89,14 +90,14 @@ public class Game {
 
             // Check for IKS
             for (List<Integer> position : winningPositions) {
-                if (board.getTileIDSForTileState(TileState.IKS).containsAll(position)) {
+                if (bluetoothBoard.getTileIDSForTileState(TileState.IKS).containsAll(position)) {
                     gameState = GameState.IKS_WON;
                     return;
                 }
             }
             // Check for OKS
             for (List<Integer> position : winningPositions) {
-                if (board.getTileIDSForTileState(TileState.OKS).containsAll(position)) {
+                if (bluetoothBoard.getTileIDSForTileState(TileState.OKS).containsAll(position)) {
                     gameState = GameState.OKS_WON;
                     return;
                 }
@@ -112,16 +113,16 @@ public class Game {
                 //Checks the tiles with IDs 0, 3, 6, keeps checking to the right until it reaches a different TileState
 
                 all_tiles:
-                for (Tile bluetoothTile : board.getTiles()) {
+                for (BluetoothTile bluetoothTile : bluetoothBoard.getTiles()) {
                     if (bluetoothTile.getState().equals(TileState.EMPTY)) continue;
                     if (!Arrays.asList(0, 3, 6).contains(bluetoothTile.getID())) continue;
 
                     for (int i = 1; i <= 2; i += 1) {
-                        Tile checkedTile = board.getTileByID(bluetoothTile.getID() + i);
-                        if (!checkedTile.getState().equals(bluetoothTile.getState())) continue all_tiles;
+                        BluetoothTile checkedBluetoothTile = bluetoothBoard.getTileByID(bluetoothTile.getID() + i);
+                        if (!checkedBluetoothTile.getState().equals(bluetoothTile.getState())) continue all_tiles;
                     }
 
-                    gameState = GameManager.getGameStateFromTileState(bluetoothTile.getState());
+                    gameState = BluetoothGameManager.getGameStateFromTileState(bluetoothTile.getState());
                     return;
 
                 }
@@ -132,16 +133,16 @@ public class Game {
                 //Checks the tiles with IDs 0, 1, 2, keeps checking to down until it reaches a different TileState
 
                 all_tiles:
-                for (Tile bluetoothTile : board.getTiles()) {
+                for (BluetoothTile bluetoothTile : bluetoothBoard.getTiles()) {
                     if (bluetoothTile.getState().equals(TileState.EMPTY)) continue;
                     if (!Arrays.asList(0, 1, 2).contains(bluetoothTile.getID())) continue;
 
                     for (int i = 3; i <= 6; i += 3) {
-                        Tile checkedTile = board.getTileByID(bluetoothTile.getID() + i);
-                        if (!checkedTile.getState().equals(bluetoothTile.getState())) continue all_tiles;
+                        BluetoothTile checkedBluetoothTile = bluetoothBoard.getTileByID(bluetoothTile.getID() + i);
+                        if (!checkedBluetoothTile.getState().equals(bluetoothTile.getState())) continue all_tiles;
                     }
 
-                    gameState = GameManager.getGameStateFromTileState(bluetoothTile.getState());
+                    gameState = BluetoothGameManager.getGameStateFromTileState(bluetoothTile.getState());
                     return;
 
                 }
@@ -152,16 +153,16 @@ public class Game {
             {   //Diagonal top left to bottom right
                 //Checks the tiles with IDs 0, 4, 8
 
-                Tile bluetoothTile = board.getTileByID(0);
+                BluetoothTile bluetoothTile = bluetoothBoard.getTileByID(0);
 
                 if (bluetoothTile.getState().equals(TileState.EMPTY)) break break_label;
 
                 for (int i = 4; i <= 8; i += 4) {
-                    Tile checkedTile = board.getTileByID(bluetoothTile.getID() + i);
-                    if (!checkedTile.getState().equals(bluetoothTile.getState())) break break_label;
+                    BluetoothTile checkedBluetoothTile = bluetoothBoard.getTileByID(bluetoothTile.getID() + i);
+                    if (!checkedBluetoothTile.getState().equals(bluetoothTile.getState())) break break_label;
                 }
 
-                gameState = GameManager.getGameStateFromTileState(bluetoothTile.getState());
+                gameState = BluetoothGameManager.getGameStateFromTileState(bluetoothTile.getState());
                 return;
 
             }
@@ -170,16 +171,16 @@ public class Game {
             {   //Diagonal top right to bottom left
                 //Checks the tiles with IDs 2, 4, 6
 
-                Tile bluetoothTile = board.getTileByID(2);
+                BluetoothTile bluetoothTile = bluetoothBoard.getTileByID(2);
 
                 if (bluetoothTile.getState().equals(TileState.EMPTY)) break break_label;
 
                 for (int i = 2; i <= 4; i += 2) {
-                    Tile checkedTile = board.getTileByID(bluetoothTile.getID() + i);
-                    if (!checkedTile.getState().equals(bluetoothTile.getState())) break break_label;
+                    BluetoothTile checkedBluetoothTile = bluetoothBoard.getTileByID(bluetoothTile.getID() + i);
+                    if (!checkedBluetoothTile.getState().equals(bluetoothTile.getState())) break break_label;
                 }
 
-                gameState = GameManager.getGameStateFromTileState(bluetoothTile.getState());
+                gameState = BluetoothGameManager.getGameStateFromTileState(bluetoothTile.getState());
                 return;
 
             }
@@ -189,7 +190,7 @@ public class Game {
         {   //Tie
 
             boolean allFilled = true;
-            for (Tile bluetoothTile : board.getTiles()) {
+            for (BluetoothTile bluetoothTile : bluetoothBoard.getTiles()) {
                 if (bluetoothTile.getState().equals(TileState.EMPTY)) {
                     allFilled = false;
                     break;
@@ -205,12 +206,12 @@ public class Game {
 
     }
 
-    public Board getBoard() {
-        return board;
+    public BluetoothBoard getBoard() {
+        return bluetoothBoard;
     }
 
-    public void setBoard(Board board) {
-        this.board = board;
+    public void setBoard(BluetoothBoard bluetoothBoard) {
+        this.bluetoothBoard = bluetoothBoard;
     }
 
     public GameState getGameState() {
@@ -229,4 +230,11 @@ public class Game {
         this.currentTurn = currentTurn;
     }
 
+    public PlayerType getPlayerType() {
+        return playerType;
+    }
+
+    public void setPlayerType(PlayerType playerType) {
+        this.playerType = playerType;
+    }
 }

@@ -1,16 +1,19 @@
-package com.example.iksoksandroidapp.IksOksLogic.blue_backend;
+package com.example.iksoksandroidapp.IksOksLogic.bluetooth_backend;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.Game;
 import com.example.iksoksandroidapp.IksOksLogic.classic_backend.GameManager;
@@ -20,9 +23,7 @@ import com.example.iksoksandroidapp.IksOksLogic.enums.TileState;
 import com.example.iksoksandroidapp.IksOksLogic.pages.PopUp;
 import com.example.iksoksandroidapp.R;
 
-import java.nio.charset.Charset;
-
-public class BlueIksOksBoard extends View {
+public class BluetoothIksOksBoard extends View {
 
     private final int boardColor;
     private final int XColor;
@@ -33,7 +34,7 @@ public class BlueIksOksBoard extends View {
 
     private final Paint paint = new Paint();
 
-    public BlueIksOksBoard(Context context, @Nullable AttributeSet attrs) {
+    public BluetoothIksOksBoard(Context context, @Nullable AttributeSet attrs) {
 
         super(context, attrs);
 
@@ -48,12 +49,18 @@ public class BlueIksOksBoard extends View {
             typedArray.recycle();
         }
 
+        LocalBroadcastManager.getInstance(context).registerReceiver(broadcastReceiverInputStream, new IntentFilter("incomingMessage"));
+
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
 
-        Game game = GameManager.getGame();
+        BluetoothGame bluetoothGame = BluetoothGameManager.getGame();
+
+        if (!bluetoothGame.getCurrentTurn().equals(bluetoothGame.getPlayerType())) {
+            return false;
+        }
 
         float x = motionEvent.getX();
         float y = motionEvent.getY();
@@ -65,12 +72,14 @@ public class BlueIksOksBoard extends View {
             int row = (int) Math.ceil(y / cellSize) - 1;
             int column = (int) Math.ceil(x / cellSize) - 1;
             int position = oneDimensionalFromTwo(row, column);
-            if (!game.playTile(position)) {
+
+            if (!bluetoothGame.playTile(position)) {
                 return false;
             }
 
-            sendCommand(String.valueOf(position));
             invalidate();
+
+            BluetoothConnectionService.instance.get().write("GAME-" + position);
 
             return true;
 
@@ -78,8 +87,6 @@ public class BlueIksOksBoard extends View {
 
         return false;
 
-//        sendCommand("X igra Polje");
-//        return true;
     }
 
     @Override
@@ -103,10 +110,10 @@ public class BlueIksOksBoard extends View {
         drawGameBoard(canvas);
         drawMarkers(canvas);
 
-        Game game = GameManager.getGame();
-        if (game.getGameState() != GameState.IN_PROGRESS) {
+        BluetoothGame bluetoothGame = BluetoothGameManager.getGame();
+        if (bluetoothGame.getGameState() != GameState.IN_PROGRESS) {
             Intent popupIntent = new Intent(getContext(), PopUp.class);
-            popupIntent.putExtra("result", game.getGameState().toString());
+            popupIntent.putExtra("result", bluetoothGame.getGameState().toString());
             getContext().startActivity(popupIntent);
         }
 
@@ -129,11 +136,11 @@ public class BlueIksOksBoard extends View {
 
     private void drawMarkers(Canvas canvas) {
 
-        for (Tile tile : GameManager.getGame().getBoard().getTiles()) {
-            if (tile.getState().equals(TileState.IKS)) {
-                drawX(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
-            } else if (tile.getState().equals(TileState.OKS)) {
-                drawO(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
+        for (BluetoothTile bluetoothTile : BluetoothGameManager.getGame().getBoard().getTiles()) {
+            if (bluetoothTile.getState().equals(TileState.IKS)) {
+                drawX(canvas, twoDimensionalFromOne(bluetoothTile.getID())[0], twoDimensionalFromOne(bluetoothTile.getID())[1]);
+            } else if (bluetoothTile.getState().equals(TileState.OKS)) {
+                drawO(canvas, twoDimensionalFromOne(bluetoothTile.getID())[0], twoDimensionalFromOne(bluetoothTile.getID())[1]);
             }
         }
 
@@ -163,14 +170,12 @@ public class BlueIksOksBoard extends View {
 
         paint.setColor(OColor);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            canvas.drawOval(
-                    (float) (col * cellSize + cellSize * 0.2),
-                    (float) (row * cellSize + cellSize * 0.2),
-                    (float) ((col * cellSize + cellSize) - cellSize * 0.2),
-                    (float) ((row * cellSize + cellSize) - cellSize * 0.2),
-                    paint);
-        }
+        canvas.drawOval(
+                (float) (col * cellSize + cellSize * 0.2),
+                (float) (row * cellSize + cellSize * 0.2),
+                (float) ((col * cellSize + cellSize) - cellSize * 0.2),
+                (float) ((row * cellSize + cellSize) - cellSize * 0.2),
+                paint);
 
     }
 
@@ -191,16 +196,31 @@ public class BlueIksOksBoard extends View {
 
     }
 
+    private final BroadcastReceiver broadcastReceiverInputStream = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
 
+            String[] messageArray = intent.getStringExtra("theMessage").trim().split("-");
 
-    public void sendCommand(String cmd) {
+            if (!messageArray[0].equals("GAME")) {
+                return;
+            }
 
-        //Parsiranje
-        byte[] bytes = cmd.getBytes(Charset.defaultCharset());
+            try {
 
-        //Slanje
-        BluetoothManager.getmBluetoothConnectionService().write(bytes);
-    }
+                BluetoothGame bluetoothGame = BluetoothGameManager.getGame();
 
+                int playedPosition = Integer.parseInt(messageArray[1]);
+
+                bluetoothGame.playTile(playedPosition);
+
+                invalidate();
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    };
 
 }

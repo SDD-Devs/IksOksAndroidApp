@@ -121,11 +121,11 @@ public class IksOksBoard extends View {
 
     private void drawMarkers(Canvas canvas) {
 
-        for (Tile tile : GameManager.getGame().getBoard().getTiles()) {
-            if (tile.getState().equals(TileState.IKS)) {
-                drawX(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
-            } else if (tile.getState().equals(TileState.OKS)) {
-                drawO(canvas, twoDimensionalFromOne(tile.getID())[0], twoDimensionalFromOne(tile.getID())[1]);
+        for (Tile bluetoothTile : GameManager.getGame().getBoard().getTiles()) {
+            if (bluetoothTile.getState().equals(TileState.IKS)) {
+                drawX(canvas, twoDimensionalFromOne(bluetoothTile.getID())[0], twoDimensionalFromOne(bluetoothTile.getID())[1]);
+            } else if (bluetoothTile.getState().equals(TileState.OKS)) {
+                drawO(canvas, twoDimensionalFromOne(bluetoothTile.getID())[0], twoDimensionalFromOne(bluetoothTile.getID())[1]);
             }
         }
 
