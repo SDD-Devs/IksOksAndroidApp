@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.bluetooth_package.activities.BluetoothGameActivity"
+    tools:context=".IksOksLogic.bluetooth_mode.activities.BluetoothGameActivity"
     android:orientation="vertical">
 
 

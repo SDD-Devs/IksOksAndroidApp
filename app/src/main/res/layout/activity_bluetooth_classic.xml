@@ -20,7 +20,7 @@
         android:textAlignment="center"
         android:textSize="40sp" />
 
-    <com.example.iksoksandroidapp.IksOksLogic.bluetooth_package.backend.BluetoothIksOksBoard
+    <com.example.iksoksandroidapp.IksOksLogic.bluetooth_mode.backend.BluetoothIksOksBoard
         android:id="@+id/bluetoothIksOksBoard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

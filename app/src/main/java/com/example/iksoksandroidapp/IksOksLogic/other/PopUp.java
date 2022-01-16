@@ -11,10 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
-import com.example.iksoksandroidapp.IksOksLogic.classic_package.backend.GameManager;
-import com.example.iksoksandroidapp.IksOksLogic.mainpage_package.activities.MainActivity;
-import com.example.iksoksandroidapp.IksOksLogic.network_package.activities.NetworkGameActivity;
-import com.example.iksoksandroidapp.IksOksLogic.network_package.activities.NetworkSetupActivity;
+import com.example.iksoksandroidapp.IksOksLogic.classic_mode.backend.GameManager;
+import com.example.iksoksandroidapp.IksOksLogic.main_page.activities.MainActivity;
+import com.example.iksoksandroidapp.IksOksLogic.network_mode.activities.NetworkGameActivity;
+import com.example.iksoksandroidapp.IksOksLogic.network_mode.activities.NetworkSetupActivity;
 import com.example.iksoksandroidapp.R;
 
 public class PopUp extends Activity {

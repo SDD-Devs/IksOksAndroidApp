@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.network_package.activities.NetworkSetupActivity"
+    tools:context=".IksOksLogic.network_mode.activities.NetworkSetupActivity"
     android:orientation="vertical"
     android:layout_centerVertical="true"
     >

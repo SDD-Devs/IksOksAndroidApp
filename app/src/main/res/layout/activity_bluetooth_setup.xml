@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.bluetooth_package.activities.BluetoothSetupActivity">
+    tools:context=".IksOksLogic.bluetooth_mode.activities.BluetoothSetupActivity">
 
     <Button
         android:id="@+id/toggleDiscoverabilityButton"
