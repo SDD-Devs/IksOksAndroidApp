@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".IksOksLogic.pages.NetworkSetupActivity"
+    tools:context=".IksOksLogic.network_package.activities.NetworkSetupActivity"
     android:orientation="vertical"
     android:layout_centerVertical="true"
     >
@@ -67,7 +67,7 @@
 
     <fragment
         android:id="@+id/fragment"
-        android:name="com.example.iksoksandroidapp.SimpleFragment"
+        android:name="com.example.iksoksandroidapp.IksOksLogic.other.SimpleFragment"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintLeft_toLeftOf="parent"

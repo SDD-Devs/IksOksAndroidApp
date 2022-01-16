@@ -27,7 +27,7 @@
         android:textAlignment="center"
         />
 
-    <com.example.iksoksandroidapp.IksOksLogic.net_backend.NetIksOksBoard
+    <com.example.iksoksandroidapp.IksOksLogic.network_package.backend.NetIksOksBoard
         android:id="@+id/netIksOksBoard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
