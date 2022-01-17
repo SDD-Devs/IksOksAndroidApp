@@ -2,10 +2,13 @@ package com.example.iksoksandroidapp.IksOksLogic.network_mode.activities;
 
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.example.iksoksandroidapp.IksOksLogic.main_page.activities.MainActivity;
 import com.example.iksoksandroidapp.IksOksLogic.network_mode.backend.Client;
 import com.example.iksoksandroidapp.R;
 
@@ -30,7 +33,7 @@ public class NetworkSetupActivity extends AppCompatActivity {
         etxtCode = (EditText) findViewById(R.id.etxt_Code);
 
 
-        client = new Client();
+        client = new Client("192.168.0.105", 5999);
         new Thread(client).start();
 
 
@@ -54,12 +57,21 @@ public class NetworkSetupActivity extends AppCompatActivity {
 
     private void createRoom() {
         String cmd = "CR";
-        client.sendMessage(cmd);
+
+        if(!client.sendMessage(cmd)) {
+            Log.d("[NET]", "Server is not running");
+            Toast.makeText(NetworkSetupActivity.this, "Server is not running.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void joinRoom(){
         String code = etxtCode.getText().toString();
         String cmd = "JR-"+code;
-        client.sendMessage(cmd);
+
+        if(!client.sendMessage(cmd)) {
+            Log.d("[NET]", "Server is not running");
+            Toast.makeText(NetworkSetupActivity.this, "Server is not running.", Toast.LENGTH_SHORT).show();
+        }
     }
+
 }

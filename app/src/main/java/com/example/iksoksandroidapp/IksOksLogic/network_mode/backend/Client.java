@@ -1,6 +1,10 @@
 package com.example.iksoksandroidapp.IksOksLogic.network_mode.backend;
 
+import android.content.Intent;
 import android.util.Log;
+
+import com.example.iksoksandroidapp.IksOksLogic.main_page.activities.MainActivity;
+import com.example.iksoksandroidapp.IksOksLogic.network_mode.activities.NetworkSetupActivity;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,11 +18,14 @@ public class Client implements Runnable{
     private DataInputStream in;
     int gameRoomId;
     public static boolean yourTurn = false;
+    private String ip;
+    private String TAG = "[NET]";
+    int port;
+    private boolean flag;
 
-    String TAG = "[NET]";
-
-    public Client(){
-
+    public Client(String ip, int port){
+        this.ip = ip;
+        this.port = port;
     }
 
 
@@ -27,7 +34,7 @@ public class Client implements Runnable{
 
         Log.d(TAG, "Hello, This is client.");
         try {
-            cSocket = new Socket("192.168.0.105", 4999);
+            cSocket = new Socket(ip, port);
             out =new DataOutputStream(cSocket.getOutputStream());
             in= new DataInputStream(cSocket.getInputStream());
             new Thread(new ClientListenThread(in)).start();
@@ -39,7 +46,7 @@ public class Client implements Runnable{
     }
 
 
-    public void sendMessage(String msg){
+    public boolean sendMessage(String msg){
 
         Thread t1 = new Thread(new Runnable() {
             @Override
@@ -47,14 +54,17 @@ public class Client implements Runnable{
                 try {
                     out.writeUTF(msg);
                     new Thread(new ClientListenThread(in)).start();
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
+                    flag = false;
                 }
             }
         });
+
+
         t1.start();
 
-
+        return flag;
     }
 
 
